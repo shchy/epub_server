@@ -46,30 +46,37 @@ func (i *BookManagerImpl) Load(dirPath string) error {
 	return nil
 }
 
-func (i *BookManagerImpl) GetBooks() ([]*BookFace, error) {
+func (i *BookManagerImpl) GetBooks() ([]*BookInfo, error) {
 
-	faces := Map(i.books, func(book Book, _ int) *BookFace {
+	faces := Map(i.books, func(book Book, _ int) *BookInfo {
 		bookId := book.GetId()
 		bookTitle := book.GetTitle()
-		pageCount := book.GetPageCount()
-		firstPage, err := book.GetPage(0)
-		if err != nil {
-			fmt.Printf("load epub error: %v", err)
-			return nil
-		}
-
-		return &BookFace{
-			Id:        bookId,
-			Title:     bookTitle,
-			PageCount: pageCount,
-			Face:      firstPage,
+		return &BookInfo{
+			Id:    bookId,
+			Title: bookTitle,
 		}
 	})
 
 	return faces, nil
 }
 
-func (i *BookManagerImpl) GetBookPage(id string, index int) (*BookItem, error) {
+func (i *BookManagerImpl) GetBook(id string) (*BookInfo, error) {
+
+	books, err := i.GetBooks()
+	if err != nil {
+		return nil, err
+	}
+	findOne, isFind := Find(books, func(item *BookInfo) bool {
+		return item.Id == id
+	})
+	if !isFind {
+		return nil, fmt.Errorf("not found book id=%s", id)
+	}
+
+	return findOne, nil
+}
+
+func (i *BookManagerImpl) GetBookPages(id string) ([]string, error) {
 	book, isFind := Find(i.books, func(item Book) bool {
 		return item.GetId() == id
 	})
@@ -77,12 +84,12 @@ func (i *BookManagerImpl) GetBookPage(id string, index int) (*BookItem, error) {
 		return nil, fmt.Errorf("not found book id=%s", id)
 	}
 
-	page, err := book.GetPage(index)
+	pages, err := book.GetPages()
 	if err != nil {
 		return nil, err
 	}
 
-	return page, nil
+	return pages, nil
 
 }
 func (i *BookManagerImpl) GetBookContent(id string, href string) (*BookItem, error) {

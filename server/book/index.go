@@ -12,23 +12,21 @@ type Book interface {
 	IsOpen() bool
 	GetId() string
 	GetTitle() string
-	GetPageCount() int
-	GetPage(index int) (*BookItem, error)
+	GetPages() ([]string, error)
 	GetContent(href string) (*BookItem, error)
 }
 
 type BookManager interface {
 	Load(dirPath string) error
-	GetBooks() ([]*BookFace, error)
-	GetBookPage(id string, index int) (*BookItem, error)
+	GetBooks() ([]*BookInfo, error)
+	GetBook(id string) (*BookInfo, error)
+	GetBookPages(id string) ([]string, error)
 	GetBookContent(id string, href string) (*BookItem, error)
 }
 
-type BookFace struct {
-	Id        string    `json:"id"`
-	Title     string    `json:"title"`
-	PageCount int       `json:"page_count"`
-	Face      *BookItem `json:"face_content"`
+type BookInfo struct {
+	Id    string `json:"id"`
+	Title string `json:"title"`
 }
 
 type BookItem struct {

@@ -10,7 +10,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}",
+            "program": "${workspaceFolder}/server",
             "env": {},
             "args": [],
             "substitutePath": [
@@ -19,6 +19,15 @@
                     "to": "/mnt/c/Users/shch/src",
                 },
             ]
-        }
+        }, {
+            "type": "chrome",
+            "request": "launch",
+            "name": "vuejs: chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/client/src",
+            "sourceMapPathOverrides": {
+              "webpack:///src/*": "${webRoot}/*"
+            }
+          },
     ]
 }

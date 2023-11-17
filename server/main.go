@@ -11,7 +11,7 @@ import (
 func main() {
 
 	bookManager := book.NewBookManager()
-	bookManager.Load("./local")
+	bookManager.Load("../local")
 	epubs, err := bookManager.GetBooks()
 	if err != nil {
 		panic(err)
@@ -30,21 +30,27 @@ func main() {
 		}
 		return c.JSON(books)
 	})
-	app.Get("/book/:id/:page", func(c *fiber.Ctx) error {
+	app.Get("/api/book/:id", func(c *fiber.Ctx) error {
 		id := c.Params("id")
-		index, err := c.ParamsInt("page")
+
+		pages, err := bookManager.GetBookPages(id)
+		if err != nil {
+			return err
+		}
+		bookInfo, err := bookManager.GetBook(id)
 		if err != nil {
 			return err
 		}
 
-		item, err := bookManager.GetBookPage(id, index)
-		if err != nil {
-			return err
-		}
-
-		return c.Redirect(fmt.Sprintf("%s/%s", c.Path(), item.Href))
+		return c.JSON(struct {
+			Head  *book.BookInfo `json:"head"`
+			Pages []string       `json:"pages"`
+		}{
+			Head:  bookInfo,
+			Pages: pages,
+		})
 	})
-	app.Get("/book/:id/:page/*", func(c *fiber.Ctx) error {
+	app.Get("/api/book/:id/*", func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		href := c.Params("*")
 		item, err := bookManager.GetBookContent(id, href)

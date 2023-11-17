@@ -50,18 +50,11 @@ func (i *BookImpl) GetTitle() string {
 	return i.book.Title
 }
 
-func (i *BookImpl) GetPageCount() int {
-	return len(i.book.Spine.Itemrefs)
-}
-
-func (i *BookImpl) GetPage(index int) (*BookItem, error) {
-
-	if index >= len(i.book.Spine.Itemrefs)-1 {
-		return nil, fmt.Errorf("page not found")
-	}
-	ref := i.book.Spine.Itemrefs[index]
-
-	return ToPage(*ref.Item)
+func (i *BookImpl) GetPages() ([]string, error) {
+	hrefs := Map(i.book.Spine.Itemrefs, func(ref epub.Itemref, _ int) string {
+		return ref.HREF
+	})
+	return hrefs, nil
 }
 
 func (i *BookImpl) GetContent(href string) (*BookItem, error) {
