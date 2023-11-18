@@ -34,7 +34,6 @@ const cachePages = computed(() => {
   const startIndex = fixPage(currentPage.value - pageCacheSize)
   const endIndex = fixPage(currentPage.value + pageCacheSize)
   const range = [...new Array(endIndex - startIndex).keys()].map((i) => startIndex + i)
-  console.log(range)
   return range
 })
 const fixPage = (index: number) => {
