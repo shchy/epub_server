@@ -5,16 +5,38 @@ import { useAPI } from '@/services/api.inject'
 import type { Book } from '@/services/models'
 import PageHolder from '@/components/PageHolder.vue'
 import { asyncComputed } from '@/components/asyncComputed'
+import { resizeComputed } from '@/components/ResizeComputed'
+
+const pageCacheSize = 6
 
 const api = useAPI()
 const route = useRoute()
 const router = useRouter()
+
+const pageviewer = ref<HTMLDivElement>()
+const isLandscape = resizeComputed(pageviewer, () => {
+  if (!pageviewer.value) {
+    return false
+  }
+
+  const h = pageviewer.value.scrollHeight
+  const twoPageWidth = h * (1264 / 1680) * 2
+  const isLand = twoPageWidth < pageviewer.value.scrollWidth
+  return isLand && currentPage.value != 0
+})
 
 const book = asyncComputed(
   () => route.params.id as string,
   (id) => api.getBook(id)
 )
 const currentPage = ref(0)
+const cachePages = computed(() => {
+  const startIndex = fixPage(currentPage.value - pageCacheSize)
+  const endIndex = fixPage(currentPage.value + pageCacheSize)
+  const range = [...new Array(endIndex - startIndex).keys()].map((i) => startIndex + i)
+  console.log(range)
+  return range
+})
 const fixPage = (index: number) => {
   const pageLength = book.value?.pages.length ?? 0
   if (pageLength <= index) {
@@ -36,25 +58,6 @@ const toPrev = () => {
   currentPage.value = toIndex
 }
 
-const pageviewer = ref<HTMLDivElement>()
-const resizeTrigger = ref(0)
-const isLandscape = computed(() => {
-  if (!pageviewer.value) {
-    return false
-  }
-  resizeTrigger.value
-
-  const h = pageviewer.value.scrollHeight
-  const twoPageWidth = h * (1264 / 1680) * 2
-  const isLand = twoPageWidth < pageviewer.value.scrollWidth
-  return isLand && currentPage.value != 0
-})
-const resizeObserver = new ResizeObserver(() => resizeTrigger.value++)
-onMounted(() => {
-  if (!pageviewer.value) return
-  resizeObserver.observe(pageviewer.value)
-})
-
 const toLeft = () => {
   toNext()
 }
@@ -62,21 +65,31 @@ const toLeft = () => {
 const toRight = () => {
   toPrev()
 }
+
+onMounted(() => {
+  if (pageviewer.value) {
+    pageviewer.value.focus()
+  }
+})
 </script>
 
 <template>
   <main>
     <div></div>
-    <div ref="pageviewer" class="pageviewer">
+    <div
+      ref="pageviewer"
+      class="pageviewer"
+      tabindex="-1"
+      @keydown.left="toLeft"
+      @keydown.right="toRight"
+    >
       <div v-if="book" class="frame-wrapper">
         <PageHolder
-          v-for="pageHref in book.pages.slice(
-            currentPage,
-            isLandscape ? currentPage + 2 : currentPage + 1
-          )"
-          :key="pageHref"
+          v-for="pageIndex in cachePages"
+          :key="pageIndex"
           :book-id="book.head.id"
-          :page-href="pageHref"
+          :page-href="book.pages[pageIndex]"
+          v-show="currentPage <= pageIndex && pageIndex < currentPage + (isLandscape ? 2 : 1)"
         ></PageHolder>
       </div>
       <div class="leftside" @click="toLeft"></div>
@@ -93,6 +106,7 @@ const toRight = () => {
   display: grid;
   grid-template-columns: 50% 50%;
   z-index: 0;
+  outline: none;
 }
 .leftside {
   grid-row: 1;
