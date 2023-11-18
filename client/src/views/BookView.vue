@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onMounted, computed, watch, ref } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAPI } from '@/services/api.inject'
-import type { Book } from '@/services/models'
+import { useAPI, useStore } from '@/services/inject'
 import PageHolder from '@/components/PageHolder.vue'
 import { asyncComputed } from '@/components/asyncComputed'
 import { resizeComputed } from '@/components/ResizeComputed'
@@ -10,6 +9,7 @@ import { resizeComputed } from '@/components/ResizeComputed'
 const pageCacheSize = 6
 
 const api = useAPI()
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -29,7 +29,18 @@ const book = asyncComputed(
   () => route.params.id as string,
   (id) => api.getBook(id)
 )
+watch(book, () => {
+  if (!book.value) return
+  const bookmark = store.loadBookmark(book.value.head.id)
+  if (!bookmark) return
+  currentPage.value = fixPage(bookmark.index)
+})
 const currentPage = ref(0)
+watch(currentPage, () => {
+  if (!book.value) return
+  store.saveBookmark({ id: book.value?.head.id, index: currentPage.value })
+})
+
 const cachePages = computed(() => {
   const startIndex = fixPage(currentPage.value - pageCacheSize)
   const endIndex = fixPage(currentPage.value + pageCacheSize)

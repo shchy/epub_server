@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAPI } from '@/services/api.inject'
+import { useAPI } from '@/services/inject'
 import HomeHeader from '../components/HomeHeader.vue'
 import { onMounted, ref } from 'vue'
 import type { BookInfo } from '@/services/models'
