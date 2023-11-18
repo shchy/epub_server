@@ -75,6 +75,15 @@ const toLeft = () => {
 const toRight = () => {
   toPrev()
 }
+const toggleShowMenu = () => {
+  isShowMenu.value = !isShowMenu.value
+}
+
+const back = () => {
+  router.back()
+}
+
+const isShowMenu = ref(false)
 
 onMounted(() => {
   if (pageviewer.value) {
@@ -85,7 +94,9 @@ onMounted(() => {
 
 <template>
   <main>
-    <div></div>
+    <div class="menu" v-show="isShowMenu">
+      <a @click.prevent="back">戻る</a>
+    </div>
     <div
       ref="pageviewer"
       class="pageviewer"
@@ -102,19 +113,56 @@ onMounted(() => {
           v-show="currentPage <= pageIndex && pageIndex < currentPage + (isLandscape ? 2 : 1)"
         ></PageHolder>
       </div>
-      <div class="leftside" @click="toLeft"></div>
-      <div class="rightside" @click="toRight"></div>
+      <div
+        :class="{ 'is-showmenu': isShowMenu }"
+        class="leftside"
+        @click="isShowMenu ? toggleShowMenu() : toLeft()"
+      ></div>
+      <div :class="{ 'is-showmenu': isShowMenu }" class="centerside" @click="toggleShowMenu"></div>
+      <div
+        :class="{ 'is-showmenu': isShowMenu }"
+        class="rightside"
+        @click="isShowMenu ? toggleShowMenu() : toRight()"
+      ></div>
     </div>
-    <div></div>
+    <div class="seek" v-show="isShowMenu">{{ currentPage + 1 }} / {{ book?.pages.length }}</div>
   </main>
 </template>
 
 <style scoped>
+main {
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+}
+.menu {
+  grid-row: 1;
+  grid-column: 1;
+  line-height: 1.5rem;
+  padding: 1rem;
+  padding-right: 1rem;
+  z-index: 3;
+  text-align: end;
+  background-color: white;
+}
+.seek {
+  grid-row: 3;
+  grid-column: 1;
+  line-height: 1.5rem;
+  padding: 1rem;
+  z-index: 3;
+  text-align: center;
+  background-color: white;
+}
 .pageviewer {
+  grid-row: 1/4;
+  grid-column: 1;
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 30% 1fr 30%;
   z-index: 0;
   outline: none;
 }
@@ -123,14 +171,23 @@ onMounted(() => {
   grid-column: 1;
   z-index: 1;
 }
-.rightside {
+.centerside {
   grid-row: 1;
   grid-column: 2;
   z-index: 1;
 }
+.rightside {
+  grid-row: 1;
+  grid-column: 3;
+  z-index: 1;
+}
+.is-showmenu {
+  background-color: black;
+  opacity: 0.5;
+}
 .frame-wrapper {
   grid-row: 1;
-  grid-column: 1/3;
+  grid-column: 1/4;
   position: relative;
   overflow: hidden;
   width: 100%;
