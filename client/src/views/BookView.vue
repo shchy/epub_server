@@ -110,7 +110,11 @@ onMounted(() => {
           :key="pageIndex"
           :book-id="book.head.id"
           :page-href="book.pages[pageIndex]"
-          v-show="currentPage <= pageIndex && pageIndex < currentPage + (isLandscape ? 2 : 1)"
+          :class="{
+            'is-not-show': !(
+              currentPage <= pageIndex && pageIndex < currentPage + (isLandscape ? 2 : 1)
+            )
+          }"
         ></PageHolder>
       </div>
       <div
@@ -195,5 +199,8 @@ main {
   display: flex;
   flex-direction: row-reverse;
   justify-content: center;
+}
+.is-not-show {
+  display: none;
 }
 </style>

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   bookId: string
   pageHref: string
 }>()
 const holder = ref<HTMLDivElement>()
 const frame = ref<HTMLIFrameElement>()
 
-watch(props, () => {
-  updateScale()
-})
+// watch(props, () => {
+//   updateScale()
+// })
 
 const updateScale = () => {
   const innerDoc = frame.value?.contentDocument
@@ -66,20 +66,26 @@ const updateScale = () => {
 const resizeObserver = new ResizeObserver(() => {
   updateScale()
 })
+const isLoaded = ref(false)
 onMounted(async () => {
   if (frame.value) {
     frame.value.addEventListener('load', () => {
       updateScale()
+      frame.value?.contentDocument?.addEventListener('click', () => {
+        holder.value?.click()
+      })
+
+      isLoaded.value = true
     })
   }
-  if (holder.value) {
-    resizeObserver.observe(holder.value)
+  if (holder.value && holder.value.parentElement) {
+    resizeObserver.observe(holder.value.parentElement)
   }
 })
 </script>
 
 <template>
-  <div ref="holder" class="holder">
+  <div ref="holder" class="holder" v-show="isLoaded">
     <iframe
       ref="frame"
       :src="`/api/book/${bookId}/${pageHref}`"
