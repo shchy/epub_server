@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { ref, watch } from 'vue'
+
+const props = defineProps<{
+  modelValue: string
+}>()
+const emit = defineEmits(['update:modelValue'])
+
+const searchWord = ref(props.modelValue)
+
+watch(searchWord, () => {
+  emit('update:modelValue', searchWord.value)
+})
 </script>
 
 <template>
   <header>
     <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-      </nav>
+      <input type="text" v-model="searchWord" />
     </div>
   </header>
 </template>
@@ -17,26 +26,15 @@ header {
   line-height: 1.5;
 }
 
-nav {
+.wrapper {
+  height: 100%;
   width: 100%;
-  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
+input {
+  font-size: x-large;
 }
 </style>

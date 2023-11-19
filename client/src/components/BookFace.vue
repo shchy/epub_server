@@ -31,19 +31,23 @@ const openBook = () => {
 
 <style scoped>
 .face-card {
-  height: 100%;
-  width: 100%;
+  height: calc(100% - 0.5em);
+  width: calc(100% - 1em);
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 1fr auto;
-  gap: 0.5em 1em;
+  /* gap: 0.5em 1em; */
 }
 .thumbnail {
   grid-row: 1;
   grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .title {
   grid-row: 2;
   grid-column: 1;
+  text-align: center;
 }
 </style>
