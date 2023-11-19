@@ -66,6 +66,14 @@ onMounted(async () => {
 <template>
   <main v-if="books">
     <HomeHeader class="header" v-model="searchWord"></HomeHeader>
+    <div class="pager">
+      <span><a @click.prevent="toPage(0)">&lt;&lt;</a></span>
+      <span v-for="i in neighborPages" :key="i">
+        <a v-if="i != currentPageIndex" @click.prevent="toPage(i)">{{ i + 1 }}</a>
+        <template v-if="i == currentPageIndex">{{ i + 1 }}</template>
+      </span>
+      <span><a @click.prevent="toPage(pageCount)">&gt;&gt;</a></span>
+    </div>
     <div class="shelf">
       <BookFace
         v-for="book in filteredList.slice(
@@ -102,7 +110,7 @@ main {
   color: white;
 }
 .shelf {
-  height: calc(100% - 4rem);
+  height: calc(100% - 8rem);
   width: 90%;
   display: flex;
   flex-direction: row;
@@ -126,18 +134,12 @@ main {
 
 @media (max-width: 1024px) {
   .shelf {
-    height: 100%;
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    margin: 1rem auto;
   }
   .face {
     min-width: 100%;
     max-width: 100%;
-    min-height: 40%;
-    max-height: 40%;
+    min-height: 60%;
+    max-height: 60%;
   }
 }
 </style>
