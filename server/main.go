@@ -5,6 +5,7 @@ import (
 	"log"
 	"mime"
 	"os"
+	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/kardianos/service"
@@ -28,8 +29,13 @@ func (p *program) Stop(s service.Service) error {
 }
 
 func (p *program) run() {
+	bookDir := os.Getenv("EPUBS")
+	if bookDir == "" {
+		bookDir = "./"
+	}
+
 	bookManager := book.NewBookManager()
-	bookManager.Load("./local")
+	bookManager.Load(filepath.Join(bookDir, "books"))
 	epubs, err := bookManager.GetBooks()
 	if err != nil {
 		panic(err)
@@ -78,9 +84,9 @@ func (p *program) run() {
 		return c.Send(item.Data)
 	})
 
-	app.Static("/", "web")
+	app.Static("/", filepath.Join(bookDir, "web"))
 	app.Get("/*", func(c *fiber.Ctx) error {
-		return c.SendFile("web/index.html")
+		return c.SendFile(filepath.Join(bookDir, "web/index.html"))
 	})
 	app.Listen(":80")
 }
