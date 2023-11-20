@@ -25,9 +25,8 @@ onMounted(async () => {
 
 <style scoped>
 main {
-  height: 100%;
+  height: 100vh;
   width: 100%;
-  overflow-y: auto;
 }
 .header {
   position: sticky;

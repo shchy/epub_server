@@ -10,13 +10,28 @@ const frame = ref<HTMLIFrameElement>()
 
 const updateScale = () => {
   const innerDoc = frame.value?.contentDocument
-  if (!holder.value || !holder.value.parentElement || !innerDoc || !innerDoc.body) {
+  if (!holder.value || !holder.value.parentElement || !frame.value || !innerDoc || !innerDoc.body) {
     return
   }
 
+  const maxSize = {
+    w: document.body.clientWidth,
+    h: document.body.clientHeight
+  }
   const holderSize = {
     w: holder.value.parentElement.scrollWidth,
     h: holder.value.parentElement.scrollHeight
+  }
+
+  if (
+    holderSize.w == 0 ||
+    holderSize.h == 0 ||
+    maxSize.w < holderSize.w ||
+    maxSize.h < holderSize.h
+  ) {
+    console.log(holderSize)
+    holderSize.w = maxSize.w
+    holderSize.h = maxSize.h
   }
   const innerSize = {
     w: innerDoc.body.scrollWidth,
@@ -40,15 +55,17 @@ const updateScale = () => {
   // 縦と横どちらに合わせるか
   const wr = holderSize.w / innerSize.w
   const hr = holderSize.h / innerSize.h
-  const isFitH = 1 - wr < 1 - hr
+  const isFitH = 1 - wr <= 1 - hr
 
   if (isFitH) {
     holder.value.style.width = `${holderSize.h * aspectR}px`
-    holder.value.style.height = '100%'
+    holder.value.style.height = `${holderSize.h}px`
   } else {
-    holder.value.style.width = '100%'
+    holder.value.style.width = `${holderSize.w}px`
     holder.value.style.height = `${holderSize.w / aspectR}px`
   }
+  frame.value.style.width = holder.value.style.width
+  frame.value.style.height = holder.value.style.height
 
   const r = isFitH ? holderSize.h / innerSize.h : holderSize.w / innerSize.w
   const style = innerDoc.body.style
@@ -99,7 +116,7 @@ onMounted(async () => {
   /* height: 100%; */
 }
 .holder iframe {
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
 }
 </style>

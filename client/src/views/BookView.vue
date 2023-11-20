@@ -143,7 +143,7 @@ onMounted(() => {
 
 <style scoped>
 main {
-  height: 100vh;
+  height: auto;
   width: 100vw;
   display: grid;
   grid-template-columns: 1fr;

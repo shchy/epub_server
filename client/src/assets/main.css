@@ -3,17 +3,17 @@
 #app {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  height: auto;
   width: 100vw;
 
   font-weight: normal;
 }
 
-main{
-  height: 100vh;
-  width: 100vw;
-
+html{
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
 
 a,
 .green {

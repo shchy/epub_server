@@ -86,21 +86,22 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
   margin: 1rem auto;
 }
 .face {
-  min-width: 33%;
-  max-width: 33%;
-  min-height: 50%;
-  max-height: 50%;
+  min-width: 120px;
+  max-width: 120px;
+  min-height: calc(120px / 0.6);
+  max-height: calc(120px / 0.6);
 }
 
 @media (min-width: 1024px) {
   .face {
-    min-width: 20%;
-    max-width: 20%;
-    min-height: 33%;
-    max-height: 33%;
+    min-width: 200px;
+    max-width: 200px;
+    min-height: calc(200px / 0.6);
+    max-height: calc(200px / 0.6);
   }
 }
 </style>
