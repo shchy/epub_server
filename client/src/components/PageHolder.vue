@@ -8,10 +8,6 @@ defineProps<{
 const holder = ref<HTMLDivElement>()
 const frame = ref<HTMLIFrameElement>()
 
-// watch(props, () => {
-//   updateScale()
-// })
-
 const updateScale = () => {
   const innerDoc = frame.value?.contentDocument
   if (!holder.value || !holder.value.parentElement || !innerDoc || !innerDoc.body) {

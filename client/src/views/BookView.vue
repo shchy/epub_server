@@ -5,6 +5,7 @@ import { useAPI, useStore } from '@/services/inject'
 import PageHolder from '@/components/PageHolder.vue'
 import { asyncComputed } from '@/components/asyncComputed'
 import { resizeComputed } from '@/components/ResizeComputed'
+import { swipeGesture } from '@/components/swipe'
 
 const pageCacheSize = 6
 
@@ -71,23 +72,24 @@ const toPrev = () => {
 const toLeft = () => {
   toNext()
 }
-
 const toRight = () => {
   toPrev()
 }
+
+const isShowMenu = ref(false)
 const toggleShowMenu = () => {
   isShowMenu.value = !isShowMenu.value
 }
-
 const back = () => {
   router.back()
 }
 
-const isShowMenu = ref(false)
-
 onMounted(() => {
   if (pageviewer.value) {
     pageviewer.value.focus()
+    const swipe = swipeGesture(pageviewer.value)
+    swipe.register('left', toRight)
+    swipe.register('right', toLeft)
   }
 })
 </script>
@@ -104,7 +106,7 @@ onMounted(() => {
       @keydown.left="toLeft"
       @keydown.right="toRight"
     >
-      <div v-if="book" class="frame-wrapper">
+      <div v-if="book" class="page">
         <PageHolder
           v-for="pageIndex in cachePages"
           :key="pageIndex"
@@ -119,13 +121,19 @@ onMounted(() => {
       </div>
       <div
         :class="{ 'is-showmenu': isShowMenu }"
-        class="leftside"
+        class="overlay-lb"
         @click="isShowMenu ? toggleShowMenu() : toLeft()"
       ></div>
-      <div :class="{ 'is-showmenu': isShowMenu }" class="centerside" @click="toggleShowMenu"></div>
+      <div :class="{ 'is-showmenu': isShowMenu }" class="overlay-lt" @click="toggleShowMenu"></div>
       <div
         :class="{ 'is-showmenu': isShowMenu }"
-        class="rightside"
+        class="overlay-center"
+        @click="toggleShowMenu"
+      ></div>
+      <div :class="{ 'is-showmenu': isShowMenu }" class="overlay-rt" @click="toggleShowMenu"></div>
+      <div
+        :class="{ 'is-showmenu': isShowMenu }"
+        class="overlay-rb"
         @click="isShowMenu ? toggleShowMenu() : toRight()"
       ></div>
     </div>
@@ -166,31 +174,43 @@ main {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 30% 1fr 30%;
+  grid-template-columns: 1fr 20% 1fr;
+  grid-template-rows: 30% 1fr;
   z-index: 0;
   outline: none;
 }
-.leftside {
+.overlay-lt {
   grid-row: 1;
   grid-column: 1;
   z-index: 1;
 }
-.centerside {
-  grid-row: 1;
+.overlay-lb {
+  grid-row: 2;
+  grid-column: 1;
+  z-index: 1;
+}
+.overlay-center {
+  grid-row: 1/3;
   grid-column: 2;
   z-index: 1;
 }
-.rightside {
+.overlay-rt {
   grid-row: 1;
   grid-column: 3;
   z-index: 1;
 }
+.overlay-rb {
+  grid-row: 2;
+  grid-column: 3;
+  z-index: 1;
+}
+
 .is-showmenu {
   background-color: black;
   opacity: 0.5;
 }
-.frame-wrapper {
-  grid-row: 1;
+.page {
+  grid-row: 1/3;
   grid-column: 1/4;
   position: relative;
   overflow: hidden;

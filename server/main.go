@@ -36,11 +36,6 @@ func (p *program) run() {
 
 	bookManager := book.NewBookManager()
 	bookManager.Load(filepath.Join(bookDir, "books"))
-	epubs, err := bookManager.GetBooks()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(len(epubs))
 
 	app := fiber.New()
 
@@ -88,7 +83,13 @@ func (p *program) run() {
 	app.Get("/*", func(c *fiber.Ctx) error {
 		return c.SendFile(filepath.Join(bookDir, "web/index.html"))
 	})
-	app.Listen(":80")
+	err := app.Listen(":80")
+	if err != nil {
+		err = app.Listen(":8080")
+		if err != nil {
+			panic((err))
+		}
+	}
 }
 
 func main() {

@@ -25,18 +25,20 @@ const openBook = () => {
     <div class="thumbnail" @click.prevent="openBook">
       <PageHolder v-if="book" :book-id="book.head.id" :page-href="book.pages[0]"></PageHolder>
     </div>
-    <p class="title">{{ book?.head.title }}</p>
+    <!-- <p class="title">{{ book?.head.title }}</p> -->
   </div>
 </template>
 
 <style scoped>
 .face-card {
-  height: calc(100% - 0.5em);
-  width: calc(100% - 1em);
+  min-height: calc(100% - 0.5em);
+  max-height: calc(100% - 0.5em);
+  min-width: calc(100% - 1em);
+  max-width: calc(100% - 1em);
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 1fr auto;
-  /* gap: 0.5em 1em; */
+  padding: 1em;
 }
 .thumbnail {
   grid-row: 1;
