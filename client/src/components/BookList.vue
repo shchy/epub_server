@@ -19,7 +19,7 @@ const filteredList = computed(() => {
 </script>
 
 <template>
-  <IntersectionList class="shelf" :list="filteredList" :page-size="20" v-slot="{ item }">
+  <IntersectionList class="shelf" :list="filteredList" :page-size="15" v-slot="{ item }">
     <BookFace class="face" :book-id="item.id"></BookFace>
   </IntersectionList>
 </template>

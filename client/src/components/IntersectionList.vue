@@ -52,7 +52,14 @@ watch(props, () => {
 <template>
   <div class="list">
     <slot v-for="item in displayedList" :item="item"></slot>
-    <div ref="lastOne"></div>
+
+    <div ref="lastOne" class="spinner-box">
+      <div class="pulse-container">
+        <div class="pulse-bubble pulse-bubble-1"></div>
+        <div class="pulse-bubble pulse-bubble-2"></div>
+        <div class="pulse-bubble pulse-bubble-3"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -60,5 +67,47 @@ watch(props, () => {
 .list {
   height: 100%;
   width: 100%;
+}
+.spinner-box {
+  width: 300px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+}
+.pulse-container {
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pulse-bubble {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #333333;
+}
+
+.pulse-bubble-1 {
+  animation: pulse 0.4s ease 0s infinite alternate;
+}
+.pulse-bubble-2 {
+  animation: pulse 0.4s ease 0.2s infinite alternate;
+}
+.pulse-bubble-3 {
+  animation: pulse 0.4s ease 0.4s infinite alternate;
 }
 </style>
