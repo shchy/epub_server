@@ -82,7 +82,7 @@ onMounted(() => {
 }
 .shelf {
   height: calc(100% - 8rem);
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -90,18 +90,18 @@ onMounted(() => {
   margin: 1rem auto;
 }
 .face {
-  min-width: 120px;
-  max-width: 120px;
-  min-height: calc(120px / 0.6);
-  max-height: calc(120px / 0.6);
+  min-width: 30%;
+  max-width: 30%;
+  min-height: calc(100vw * 0.3 / 0.7);
+  max-height: calc(100vw * 0.3 / 0.7);
 }
 
 @media (min-width: 1024px) {
   .face {
-    min-width: 200px;
-    max-width: 200px;
-    min-height: calc(200px / 0.6);
-    max-height: calc(200px / 0.6);
+    min-width: 20%;
+    max-width: 20%;
+    min-height: calc(100vw * 0.2 / 0.7);
+    max-height: calc(100vw * 0.2 / 0.7);
   }
 }
 </style>
