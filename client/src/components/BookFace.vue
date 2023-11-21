@@ -38,7 +38,6 @@ const openBook = () => {
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 1fr auto;
-  padding: 1em;
 }
 .thumbnail {
   grid-row: 1;
