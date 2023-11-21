@@ -96,7 +96,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="menu" v-show="isShowMenu">
+    <div class="book-menu" v-show="isShowMenu">
       <a @click.prevent="back">戻る</a>
     </div>
     <div
@@ -141,6 +141,12 @@ onMounted(() => {
   </main>
 </template>
 
+<style>
+body {
+  min-height: auto !important;
+}
+</style>
+
 <style scoped>
 main {
   height: auto;
@@ -149,7 +155,7 @@ main {
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr auto;
 }
-.menu {
+.book-menu {
   grid-row: 1;
   grid-column: 1;
   line-height: 1.5rem;

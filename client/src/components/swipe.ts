@@ -23,11 +23,11 @@ export const swipeGesture = (elm: HTMLElement) => {
   })
   elm.addEventListener('touchend', (e: TouchEvent) => {
     if (!onPos.value) return
-    if (e.touches.length != 1) return
+    if (e.changedTouches.length != 1) return
 
     handle(onPos.value, {
-      x: e.touches[0].screenX,
-      y: e.touches[0].screenY
+      x: e.changedTouches[0].screenX,
+      y: e.changedTouches[0].screenY
     })
     onPos.value = undefined
   })

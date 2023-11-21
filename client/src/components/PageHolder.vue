@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 defineProps<{
   bookId: string
@@ -15,8 +15,8 @@ const updateScale = () => {
   }
 
   const maxSize = {
-    w: document.body.clientWidth,
-    h: document.body.clientHeight
+    w: window.innerWidth,
+    h: window.innerHeight
   }
   const holderSize = {
     w: holder.value.parentElement.scrollWidth,
@@ -29,7 +29,6 @@ const updateScale = () => {
     maxSize.w < holderSize.w ||
     maxSize.h < holderSize.h
   ) {
-    console.log(holderSize)
     holderSize.w = maxSize.w
     holderSize.h = maxSize.h
   }
