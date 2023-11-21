@@ -13,6 +13,7 @@ interface SwipeCallback {
 export const swipeGesture = (elm: HTMLElement) => {
   const events = ref<SwipeCallback[]>([])
   const onPos = ref<Pos>()
+  const marginPx = window.innerWidth / 10
 
   elm.addEventListener('touchstart', (e: TouchEvent) => {
     if (e.touches.length != 1) return
@@ -32,17 +33,23 @@ export const swipeGesture = (elm: HTMLElement) => {
     onPos.value = undefined
   })
   const handle = (s: Pos, e: Pos) => {
-    if (s.x < e.x) {
-      events.value.filter((x) => x.type == 'right').forEach((x) => x.callback())
-    }
-    if (e.x < s.x) {
-      events.value.filter((x) => x.type == 'left').forEach((x) => x.callback())
-    }
-    if (s.y < e.y) {
-      events.value.filter((x) => x.type == 'down').forEach((x) => x.callback())
-    }
-    if (e.y < s.y) {
-      events.value.filter((x) => x.type == 'up').forEach((x) => x.callback())
+    const rightMove = e.x - s.x
+    const leftMove = rightMove * -1
+    const downMove = e.y - s.y
+    const upMove = downMove * -1
+
+    if (Math.abs(rightMove) > Math.abs(downMove)) {
+      if (marginPx < rightMove) {
+        events.value.filter((x) => x.type == 'right').forEach((x) => x.callback())
+      } else if (marginPx < leftMove) {
+        events.value.filter((x) => x.type == 'left').forEach((x) => x.callback())
+      }
+    } else {
+      if (marginPx < downMove) {
+        events.value.filter((x) => x.type == 'down').forEach((x) => x.callback())
+      } else if (marginPx < upMove) {
+        events.value.filter((x) => x.type == 'up').forEach((x) => x.callback())
+      }
     }
   }
 
