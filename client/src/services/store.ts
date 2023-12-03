@@ -1,3 +1,5 @@
+import { idText } from 'typescript'
+
 export interface Bookmark {
   id: string
   index: number
@@ -5,8 +7,12 @@ export interface Bookmark {
 }
 
 const storeService = () => {
-  const saveBookmark = (v: Bookmark) => {
-    v.timestamp = Math.floor(new Date().getTime() / 1000)
+  const saveBookmark = (bookId: string, index: number) => {
+    const v: Bookmark = {
+      id: bookId,
+      index: index,
+      timestamp: Math.floor(new Date().getTime() / 1000)
+    }
     localStorage.setItem(v.id, JSON.stringify(v))
   }
 

@@ -39,7 +39,7 @@ watch(book, () => {
 const currentPage = ref(0)
 watch(currentPage, () => {
   if (!book.value) return
-  store.saveBookmark({ id: book.value?.head.id, index: currentPage.value })
+  store.saveBookmark(book.value?.head.id, currentPage.value)
 })
 
 const cachePages = computed(() => {
