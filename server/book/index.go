@@ -18,10 +18,11 @@ type Book interface {
 
 type BookManager interface {
 	Load(dirPath string) error
-	GetBooks() ([]*BookInfo, error)
+	GetBooks(seriesId string) ([]*BookInfo, error)
 	GetBook(id string) (*BookInfo, error)
 	GetBookPages(id string) ([]string, error)
 	GetBookContent(id string, href string) (*BookItem, error)
+	GetSeries() ([]*SeriesInfo, error)
 }
 
 type BookInfo struct {
@@ -33,6 +34,12 @@ type BookItem struct {
 	Href string `json:"href"`
 	Mime string `json:"mime"`
 	Data []byte `json:"data"`
+}
+
+type SeriesInfo struct {
+	Id    string      `json:"id"`
+	Title string      `json:"title"`
+	Infos []*BookInfo `json:"books"`
 }
 
 func ReadBytes(item epub.Item) ([]byte, error) {

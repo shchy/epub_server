@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { BookInfo } from '@/services/models'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { routeNames } from '@/router'
 import BookFace from '../components/BookFace.vue'
 import IntersectionList from '@/components/IntersectionList.vue'
 
@@ -16,11 +18,16 @@ const filteredList = computed(() => {
   )
   return xs
 })
+
+const router = useRouter()
+const openBook = (bookId: string) => {
+  router.push({ name: routeNames.Book, params: { id: bookId } })
+}
 </script>
 
 <template>
   <IntersectionList class="shelf" :list="filteredList" :page-size="15" v-slot="{ item }">
-    <BookFace class="face" :book-id="item.id"></BookFace>
+    <BookFace class="face" :book-id="item.id" @click="openBook"></BookFace>
   </IntersectionList>
 </template>
 

@@ -7,3 +7,9 @@ export interface Book {
   head: BookInfo
   pages: string[]
 }
+
+export interface SeriesInfo {
+  id: string
+  title: string
+  books: BookInfo[]
+}

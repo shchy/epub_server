@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	. "github.com/samber/lo"
 )
 
 type BookManagerImpl struct {
-	books []Book
+	books  []Book
+	series []*SeriesInfo
 }
 
 func NewBookManager() BookManager {
 	return &BookManagerImpl{
-		books: []Book{},
+		books:  []Book{},
+		series: []*SeriesInfo{},
 	}
 }
 
@@ -46,34 +49,35 @@ func (i *BookManagerImpl) Load(dirPath string) error {
 	return nil
 }
 
-func (i *BookManagerImpl) GetBooks() ([]*BookInfo, error) {
+func (i *BookManagerImpl) GetBooks(seriesId string) ([]*BookInfo, error) {
+	seriesList, err := i.GetSeries()
+	if err != nil {
+		return nil, err
+	}
 
-	faces := Map(i.books, func(book Book, _ int) *BookInfo {
-		bookId := book.GetId()
-		bookTitle := book.GetTitle()
-		return &BookInfo{
-			Id:    bookId,
-			Title: bookTitle,
-		}
+	series, isFind := Find(seriesList, func(series *SeriesInfo) bool {
+		return series.Id == seriesId
 	})
+	if !isFind {
+		return nil, fmt.Errorf("series not found id=" + seriesId)
+	}
 
-	return faces, nil
+	return series.Infos, nil
 }
 
 func (i *BookManagerImpl) GetBook(id string) (*BookInfo, error) {
 
-	books, err := i.GetBooks()
-	if err != nil {
-		return nil, err
-	}
-	findOne, isFind := Find(books, func(item *BookInfo) bool {
-		return item.Id == id
+	findOne, isFind := Find(i.books, func(item Book) bool {
+		return item.GetId() == id
 	})
 	if !isFind {
 		return nil, fmt.Errorf("not found book id=%s", id)
 	}
 
-	return findOne, nil
+	return &BookInfo{
+		Id:    findOne.GetId(),
+		Title: findOne.GetTitle(),
+	}, nil
 }
 
 func (i *BookManagerImpl) GetBookPages(id string) ([]string, error) {
@@ -106,6 +110,40 @@ func (i *BookManagerImpl) GetBookContent(id string, href string) (*BookItem, err
 	}
 
 	return page, nil
+}
+
+func (i *BookManagerImpl) GetSeries() ([]*SeriesInfo, error) {
+	if len(i.series) == 0 {
+		books := i.books
+
+		// idがある程度一致しているものを同シリーズとみなす
+		seriesList := make([]*SeriesInfo, 0)
+
+		for _, book := range books {
+			info := &BookInfo{
+				Id:    book.GetId(),
+				Title: book.GetTitle(),
+			}
+			idParts := strings.Split(info.Id, "_")
+			dataId := idParts[0]
+
+			series, isFind := Find(seriesList, func(item *SeriesInfo) bool {
+				return item.Id == dataId
+			})
+			if !isFind {
+				series = &SeriesInfo{
+					Id:    dataId,
+					Title: info.Title,
+					Infos: []*BookInfo{},
+				}
+				seriesList = append(seriesList, series)
+			}
+			series.Infos = append(series.Infos, info)
+		}
+		i.series = seriesList
+	}
+
+	return i.series, nil
 }
 
 func findFiles(dirPath string, predicate func(filename string) bool) ([]string, error) {

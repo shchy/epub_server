@@ -1,25 +1,27 @@
 <script setup lang="ts">
 import { useAPI } from '@/services/inject'
 import HomeHeader from '../components/HomeHeader.vue'
-import SeriesList from '../components/SeriesList.vue'
+import BookList from '../components/BookList.vue'
 
-import { onMounted, ref } from 'vue'
-import type { SeriesInfo } from '@/services/models'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { asyncComputed } from '@/components/asyncComputed'
+
+const route = useRoute()
+const seriesId = computed(() => route.params.id as string)
 
 const api = useAPI()
-const series = ref<SeriesInfo[]>([])
+const books = asyncComputed(
+  () => api.getBooks(seriesId.value),
+  async (v) => await v
+)
 const searchWord = ref('')
-
-onMounted(async () => {
-  const xs = await api.getSeries()
-  series.value = xs
-})
 </script>
 
 <template>
-  <main v-if="series">
+  <main v-if="books">
     <HomeHeader class="header" v-model="searchWord"></HomeHeader>
-    <SeriesList :series="series" :search-word="searchWord"></SeriesList>
+    <BookList :books="books" :search-word="searchWord"></BookList>
   </main>
 </template>
 

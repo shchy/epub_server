@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance } from 'axios'
-import type { Book, BookInfo } from './models'
+import type { Book, BookInfo, SeriesInfo } from './models'
 
 const apiService = (baseURL: string) => {
   const getClient = (): AxiosInstance => {
@@ -24,9 +24,13 @@ const apiService = (baseURL: string) => {
     return client
   }
 
-  const getBooks = (): Promise<BookInfo[]> => {
+  const getBooks = (seriesId: string): Promise<BookInfo[]> => {
     return getClient()
-      .get('/api/books')
+      .get('/api/books', {
+        params: {
+          seriesid: seriesId
+        }
+      })
       .then((res) => res.data)
   }
   const getBook = (id: string): Promise<Book> => {
@@ -39,11 +43,17 @@ const apiService = (baseURL: string) => {
       .get(`/api/book/${id}/${href}`)
       .then((res) => res.data)
   }
+  const getSeries = (): Promise<SeriesInfo[]> => {
+    return getClient()
+      .get('/api/series')
+      .then((res) => res.data)
+  }
 
   return {
     getBooks,
     getBook,
-    getBookContent
+    getBookContent,
+    getSeries
   }
 }
 

@@ -38,9 +38,9 @@ func (p *program) run() {
 	bookManager.Load(filepath.Join(bookDir, "books"))
 
 	app := fiber.New()
-
 	app.Get("/api/books", func(c *fiber.Ctx) error {
-		books, err := bookManager.GetBooks()
+		seriesid := c.Query("seriesid")
+		books, err := bookManager.GetBooks(seriesid)
 		if err != nil {
 			return err
 		}
@@ -77,6 +77,14 @@ func (p *program) run() {
 		mime.ParseMediaType(item.Mime)
 		c.Set("Content-type", item.Mime)
 		return c.Send(item.Data)
+	})
+
+	app.Get("/api/series", func(c *fiber.Ctx) error {
+		series, err := bookManager.GetSeries()
+		if err != nil {
+			return err
+		}
+		return c.JSON(series)
 	})
 
 	app.Static("/", filepath.Join(bookDir, "web"))
