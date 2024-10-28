@@ -15,7 +15,9 @@ export const useDB = <T extends object>({
       req.onupgradeneeded = (e) => {
         const db = (e.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName, { keyPath: keyPath.toString() });
+          db.createObjectStore(storeName, {
+            keyPath: keyPath.toString(),
+          });
         }
       };
       req.onsuccess = (e) => resolve((e.target as IDBOpenDBRequest).result);

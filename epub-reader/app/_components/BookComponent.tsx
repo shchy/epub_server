@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Stack, CircularProgress } from '@mui/material';
-import { CreateEpubController, Epub } from '../_services';
+import { CircularProgress } from '@mui/material';
+import { CreateEpubController, Epub, EpubController } from '../_services';
 import { PageComponent } from './PageComponent';
 
 export const BookComponent = ({ epub }: { epub: Epub }) => {
   const [page, setPage] = useState(0);
-  const [epubCtrl, setEpubCtrl] = useState(CreateEpubController(epub));
+  const [epubCtrl, setEpubCtrl] = useState<EpubController>();
 
   useEffect(() => {
     (async () => {
-      setEpubCtrl(epubCtrl);
+      const ctrl = CreateEpubController(epub);
+      setEpubCtrl(ctrl);
+      setPage(0);
     })();
-  }, [epubCtrl]);
+  }, [epub]);
 
-  return epub ? (
+  return epubCtrl ? (
     // <Stack direction="column">
     <PageComponent controller={epubCtrl} page={page} />
   ) : (

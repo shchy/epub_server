@@ -103,7 +103,7 @@ export const CreateEpub = (epubFile: Uint8Array) => {
     const spine = getSpine(rootFile, manifests);
 
     return {
-      ...metaData,
+      metaData: metaData,
       manifest: manifests,
       spine: spine,
     };
@@ -121,7 +121,7 @@ export const CreateEpub = (epubFile: Uint8Array) => {
 export const CreateEpubController = (epub: Epub) => {
   const { epubData } = epub;
   const getCoverImage = () => {
-    const cover = epub.meta.find((x) => x.name === 'cover');
+    const cover = epub.metaData.meta.find((x) => x.name === 'cover');
     if (!cover) return;
     const coverItem = epub.manifest.find((x) => x.id === cover.value);
     if (!coverItem) return;
