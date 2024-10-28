@@ -1,8 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { BookComponent } from './BookComponent';
-import { CreateEpub, Epub } from '../_services';
-import { useEpubStore } from '../_services/epubstore';
+import { CreateEpub, Epub, useEpubStore } from '../_services';
 
 const epubFileName = '618908_001_SPY×FAMILY 1.epub';
 
