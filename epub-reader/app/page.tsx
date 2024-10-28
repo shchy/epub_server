@@ -1,12 +1,13 @@
-import { ClientComponent } from "./_components/ClientComponent";
-
+import { Container } from '@mui/material';
+import { ClientComponent } from './_components/ClientComponent';
 
 export default function Home() {
-  
   return (
     <div>
       <main>
-        <ClientComponent />
+        <Container fixed sx={{ height: '100vh' }}>
+          <ClientComponent />
+        </Container>
       </main>
     </div>
   );

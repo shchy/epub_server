@@ -1,44 +1,37 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { BookComponent } from './BookComponent';
+import { useDB } from '../_services/store';
 import { CreateEpub, Epub } from '../_services';
 
-const epubFilePath = '/books/618908_001_SPY×FAMILY 1.epub';
+const epubFileName = '618908_001_SPY×FAMILY 1.epub';
 
 export const ClientComponent = () => {
   const [epub, setEpub] = useState<Epub>();
-  // const [cover, setCover] = useState<Uint8Array>();
-  const [pageHtml, setPageHtml] = useState<string>();
-  const [page, setPage] = useState(0);
-  // const pageElement = useRef<HTMLIFrameElement>(null);
+  const { get, put } = useDB<Epub>({
+    dbName: 'bookDB',
+    storeName: 'books',
+    keyPath: 'identifier',
+  });
 
   useEffect(() => {
     (async () => {
-      const response = await fetch(epubFilePath);
-      const epubFile = await response.arrayBuffer();
-      const epub = CreateEpub(new Uint8Array(epubFile));
-      setEpub(epub);
-      // setCover(epub.getCoverImage());
+      let file = await get(epubFileName);
+      if (!file) {
+        console.log('fetch');
+        const s = performance.now();
+        const response = await fetch(`/books/${epubFileName}`);
+        const data = await response.arrayBuffer();
+        file = CreateEpub(new Uint8Array(data));
+        const e = performance.now();
+        console.log('create epub', e - s);
+        await put(file);
+      } else {
+        console.log('not fetch');
+      }
+      setEpub(file);
     })();
-  }, [setEpub]);
+  }, [setEpub, get, put]);
 
-  useEffect(() => {
-    if (!epub) return;
-    const html = epub.getPage(page);
-    if (!html) return;
-    setPageHtml(html.outerHTML);
-  }, [epub, page]);
-
-  const aaa = async () => {
-    setPage(page + 1);
-  };
-
-  return (
-    <div>
-      <h1>{epub?.metadata.title}</h1>
-
-      <iframe srcDoc={pageHtml} width="100%" height="1600px"></iframe>
-
-      <button onClick={aaa}>call</button>
-    </div>
-  );
+  return epub ? <BookComponent epub={epub} /> : <></>;
 };
