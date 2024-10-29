@@ -173,14 +173,36 @@ export const CreateEpubController = (epub: Epub) => {
       img.src = `data:image/png;base64,${Buffer.from(imgData).toString(
         'base64'
       )}`;
+      // // epubの情報が嘘かもしれないので上書きする
+      // img.onload = () => {
+      //   img.setAttribute('width', img.width.toString());
+      //   img.setAttribute('height', img.height.toString());
+      // };
     }
 
     return pageDom.querySelector('html');
   };
 
+  const isFixedLayout =
+    epub.metaData.meta.find((x) => x.name === 'fixed-layout')?.value === 'true';
+
+  const originalResolution = (() => {
+    const reso = epub.metaData.meta.find(
+      (x) => x.name === 'original-resolution'
+    )?.value;
+    if (!reso) return;
+    const wh = reso.split('x');
+
+    return {
+      width: parseInt(wh[0]),
+      height: parseInt(wh[1]),
+    };
+  })();
   return {
     getCoverImage,
     getPage,
+    isFixedLayout,
+    originalResolution,
   };
 };
 

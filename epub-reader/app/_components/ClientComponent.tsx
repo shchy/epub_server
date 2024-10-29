@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Box, CircularProgress } from '@mui/material';
 import { BookComponent } from './BookComponent';
 import { CreateEpub, Epub, useEpubStore } from '../_services';
 
@@ -30,5 +31,15 @@ export const ClientComponent = () => {
     })();
   }, [setEpub, getBook, putBook]);
 
-  return epub ? <BookComponent epub={epub} /> : <></>;
+  return (
+    <Box sx={{ background: 'blue' }}>
+      {epub ? (
+        <BookComponent epub={epub} />
+      ) : (
+        <>
+          <CircularProgress />
+        </>
+      )}
+    </Box>
+  );
 };
