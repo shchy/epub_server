@@ -1,9 +1,7 @@
-'use client';
 import { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { BookComponent } from './BookComponent';
 import { CreateEpub, Epub, useEpubStore } from '../_services';
-
 const epubFileName = '618908_001_SPY×FAMILY 1.epub';
 
 export const ClientComponent = () => {
@@ -18,7 +16,7 @@ export const ClientComponent = () => {
         return;
       }
 
-      const response = await fetch(`/books/${epubFileName}`);
+      const response = await fetch(`./books/${epubFileName}`);
       const data = await response.arrayBuffer();
       setEpub(
         (

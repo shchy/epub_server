@@ -1,6 +1,6 @@
 import * as fflate from 'fflate';
 import { XMLParser } from 'fast-xml-parser';
-import path from 'path';
+import path from 'path-browserify-esm';
 
 export interface EpubMetaValue {
   name: string;
@@ -23,6 +23,9 @@ export interface EpubSpineItem {
   item: EpubManifestItem;
   prop?: string;
 }
+
+const pathJoin = (...parts: string[]) => path.join(...parts);
+const pathDir = (x: string) => path.dirname(x);
 
 export const CreateEpub = (epubFile: Uint8Array) => {
   const xmlParser = new XMLParser({
@@ -138,7 +141,7 @@ export const CreateEpubController = (epub: Epub) => {
 
       const pageInfo = epub.spine[index];
       const pagePath = `EPUB/${pageInfo.item.href}`;
-      const pageDir = path.dirname(pagePath);
+      const pageDir = pathDir(pagePath);
       const pageData = epubData[pagePath];
 
       // CSSとかimgとかをEPUB内のファイルで置き換える
@@ -159,10 +162,7 @@ export const CreateEpubController = (epub: Epub) => {
         for (const cssLink of cssLinks) {
           head.removeChild(cssLink);
 
-          const cssPath = path.join(
-            pageDir,
-            cssLink.getAttribute('href') ?? ''
-          );
+          const cssPath = pathJoin(pageDir, cssLink.getAttribute('href') ?? '');
           const cssData = epubData[cssPath];
           const cssText = Buffer.from(cssData).toString('utf8');
           const style = pageDom.createElement('style');
@@ -174,7 +174,7 @@ export const CreateEpubController = (epub: Epub) => {
       // Imgの置き換え
       const imgs = Array.from(pageDom.querySelectorAll('img'));
       for (const img of imgs) {
-        const imgPath = path.join(pageDir, img.getAttribute('src') ?? '');
+        const imgPath = pathJoin(pageDir, img.getAttribute('src') ?? '');
         const imgData = epubData[imgPath];
 
         img.src = `data:image/png;base64,${Buffer.from(imgData).toString(
