@@ -4,9 +4,23 @@ import { CreateEpub, CreateEpubController } from './epub';
 import { createDB } from './store';
 
 const VERSION = 'v1';
-interface bookIndex {
+// 本の索引情報 1レコードしかない
+interface SeriesDBItem {
   version: string;
   series: BookSeries[];
+}
+// 本のページ情報
+interface PageDBItem {
+  id: string;
+  page: string;
+}
+const createPageDBItemKey = (bookId: string, pageIndex: number) =>
+  `${bookId}!${pageIndex}`;
+// 本のページ情報保存済みかどうかを保持する
+interface BookDBItem {
+  id: string;
+  name: string;
+  count: number;
 }
 
 export interface BookSeries {
@@ -23,11 +37,6 @@ export interface Book {
   filePath: string;
 }
 
-export interface EpubStoreItem {
-  id: string;
-  page: string;
-}
-
 export interface BookLibrary {
   series: BookSeries[];
   getBook: (id: string) => Promise<Book | undefined>;
@@ -42,15 +51,21 @@ export interface BookLibrary {
 export const CreateBookLibrary = (): BookLibrary => {
   const [series, setSeries] = useState<BookSeries[]>([]);
 
-  const seriesStore = createDB<bookIndex>({
+  const seriesStore = createDB<SeriesDBItem>({
     dbName: 'seriesDB',
     storeName: 'series',
     keyPath: 'version',
   });
 
-  const pageStore = createDB<EpubStoreItem>({
-    dbName: 'pageDB2',
+  const pageStore = createDB<PageDBItem>({
+    dbName: 'pageDB',
     storeName: 'pages',
+    keyPath: 'id',
+  });
+
+  const bookStore = createDB<BookDBItem>({
+    dbName: 'bookDB',
+    storeName: 'books',
     keyPath: 'id',
   });
 
@@ -67,10 +82,14 @@ export const CreateBookLibrary = (): BookLibrary => {
 
   const epubDownload = async (bookId: string) => {
     try {
-      console.log('epubDownload', bookId);
       const book = series.flatMap((x) => x.books).find((x) => x.id === bookId);
       if (!book) return;
-      console.log('epubDownload findBook', bookId, book);
+
+      const stored = await bookStore.get(bookId);
+      if (stored) {
+        console.log(`${book.id} downloaded`);
+        return;
+      }
 
       const response = await fetch(`/books/${book.filePath}`);
       console.log('epubDownload fetch epub', bookId);
@@ -83,7 +102,7 @@ export const CreateBookLibrary = (): BookLibrary => {
       console.log('epubDownload create controller', bookId);
 
       for (const index of [...Array(epub.spine.length).keys()]) {
-        const pageKey = `${bookId}!${index}`;
+        const pageKey = createPageDBItemKey(bookId, index);
         let item = await pageStore.get(pageKey);
         if (!item) {
           const page = await ctrl.getPage(index);
@@ -96,6 +115,11 @@ export const CreateBookLibrary = (): BookLibrary => {
         }
         console.log('epubDownload save page', bookId, index);
       }
+      await bookStore.put({
+        id: bookId,
+        name: book.name,
+        count: book.pageCount,
+      });
       console.log('epubDownload end', bookId);
       return epub;
     } catch (err) {
@@ -136,12 +160,14 @@ export const CreateBookLibrary = (): BookLibrary => {
   };
 
   const getBook = async (id: string) => {
+    const book = series.flatMap((x) => x.books).find((x) => x.id === id);
+    if (!book) return;
     await epubDownload(id);
-    return series.flatMap((x) => x.books).find((x) => x.id === id);
+    return book;
   };
 
   const getBookPage = async (bookId: string, pageIndex: number) => {
-    const item = await pageStore.get(`${bookId}!${pageIndex}`);
+    const item = await pageStore.get(createPageDBItemKey(bookId, pageIndex));
     return item?.page;
   };
 
