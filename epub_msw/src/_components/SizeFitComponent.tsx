@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import { useElementSize } from '../_services';
 
-export const SizeFitComponent = ({ children }: React.PropsWithChildren) => {
+export const SizeFitComponent = ({
+  isHide,
+  children,
+}: React.PropsWithChildren<{ isHide?: boolean }>) => {
   const { ref: parentRef, size: parentSize } = useElementSize();
   const { ref: targetRef, size: targetSize } = useElementSize();
 
@@ -36,6 +39,7 @@ export const SizeFitComponent = ({ children }: React.PropsWithChildren) => {
         width: '100%',
         height: '100%',
         overflow: 'hidden',
+        display: isHide ? 'none' : undefined,
       }}
     >
       <div ref={targetRef} style={{ position: 'absolute' }}>

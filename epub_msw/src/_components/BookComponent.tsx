@@ -1,68 +1,35 @@
+import { useParams } from 'react-router-dom';
+import { PageComponent, PageProp } from './PageComponent';
+import { useBookLibrary } from '../_services';
 import { useEffect, useState } from 'react';
-import { CreateEpubController, Epub, EpubController } from '../_services';
-import { PageComponent } from './PageComponent';
-import { CircularProgress, Stack } from '@mui/material';
 
-interface PageState {
-  index: number;
-  html?: HTMLHtmlElement;
-}
-
-export const BookComponent = ({ epub }: { epub: Epub }) => {
-  const [epubCtrl, setEpubCtrl] = useState<EpubController>();
-  const [pages, setPages] = useState<PageState[]>([]);
+export const BookComponent = () => {
+  const { bookId } = useParams();
+  const { getBook } = useBookLibrary();
+  const [pages, setPages] = useState<Omit<PageProp, 'currentPage'>[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [currentPageHtml, setCurrentPageHtml] = useState<string>();
-
-  // const windowSize = useScreenSize();
-  // const isHorizontal = useMemo(
-  //   () => windowSize.width > windowSize.height,
-  //   [windowSize]
-  // );
 
   useEffect(() => {
-    (async () => {
-      const ctrl = CreateEpubController(epub);
-      setEpubCtrl(ctrl);
-      setPages(
-        epub.spine.map((_, i) => ({
-          index: i,
-        }))
-      );
-    })();
-  }, [epub]);
+    if (!bookId) return;
+    const book = getBook(bookId);
+    if (!book) {
+      setPages([]);
+      return;
+    }
+    const pages = [...Array(book.pageCount).keys()].map<
+      Omit<PageProp, 'currentPage'>
+    >((i) => ({
+      book: book,
+      index: i,
+    }));
+    setPages(pages);
+  }, [bookId, getBook, currentPage]);
 
-  useEffect(() => {
-    (async () => {
-      if (!epubCtrl) return;
-      if (pages.length === 0) return;
-      if (currentPage < 0 || pages.length <= currentPage) return;
+  const next = async () => {
+    setCurrentPage(currentPage + 1);
+  };
 
-      for (const page of pages) {
-        const isCurrent = page.index === currentPage;
-        const isPreLoad = Math.abs(page.index - currentPage) < 3;
-
-        if (isPreLoad) {
-          if (!page.html) {
-            page.html = await epubCtrl.getPage(page.index);
-          }
-          if (isCurrent && page.html) {
-            setCurrentPageHtml(page.html.outerHTML);
-          }
-        } else {
-          page.html = undefined;
-        }
-      }
-    })();
-  }, [epubCtrl, pages, currentPage]);
-
-  if (epubCtrl === undefined) {
-    return (
-      <Stack direction="column" justifyContent="center">
-        <CircularProgress />
-      </Stack>
-    );
-  }
+  if (!bookId) return <></>;
 
   return (
     <div
@@ -73,7 +40,7 @@ export const BookComponent = ({ epub }: { epub: Epub }) => {
         width: '100%',
       }}
     >
-      <div style={{ height: '100px' }}>Header</div>
+      <div style={{ height: '100px' }}>Header </div>
 
       <div
         style={{
@@ -84,15 +51,15 @@ export const BookComponent = ({ epub }: { epub: Epub }) => {
           justifyContent: 'center',
         }}
       >
-        {currentPageHtml ? (
-          <PageComponent page={currentPageHtml} />
-        ) : (
-          <p>not found</p>
-        )}
+        {pages.map((p) => {
+          return (
+            <PageComponent key={p.index} {...p} currentPage={currentPage} />
+          );
+        })}
       </div>
 
       <div style={{ height: '100px' }}>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>next</button>
+        <button onClick={() => next()}>next</button>
       </div>
     </div>
   );

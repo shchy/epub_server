@@ -1,11 +1,39 @@
 import { Container } from '@mui/material';
-import { ClientComponent } from './_components/ClientComponent';
+import { BookLibraryProvider } from './_services';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
+import { HomeComponent } from './_components/HomeComponent';
+import { SeriesComponent } from './_components/SeriesComponent';
+import { BookComponent } from './_components/BookComponent';
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <HomeComponent />,
+  },
+  {
+    path: '/series/:seriesId',
+    element: <SeriesComponent />,
+  },
+  {
+    path: '/book/:bookId',
+    element: <BookComponent />,
+  },
+  {
+    path: '/*',
+    element: <Navigate to="/" />,
+  },
+]);
 
 function App() {
   return (
-    <Container fixed sx={{ height: '100vh' }}>
-      <ClientComponent />
-    </Container>
+    <BookLibraryProvider>
+      <Container fixed sx={{ height: '100vh' }}>
+        <RouterProvider router={router} />
+      </Container>
+    </BookLibraryProvider>
   );
 }
 
