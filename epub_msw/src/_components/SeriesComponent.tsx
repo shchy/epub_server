@@ -5,14 +5,16 @@ import { useEffect, useState } from 'react';
 
 export const SeriesComponent = () => {
   const { seriesId } = useParams();
-  const { series } = useBookLibrary();
+  const { getSeries } = useBookLibrary();
   const [bookSeries, setBookSeries] = useState<BookSeries>();
 
   useEffect(() => {
-    const findOne = series.find((x) => x.id === seriesId);
-    if (!findOne) return;
-    setBookSeries(findOne);
-  }, [seriesId, series, setBookSeries]);
+    (async () => {
+      const series = (await getSeries()).find((x) => x.id === seriesId);
+      if (!series) return;
+      setBookSeries(series);
+    })();
+  }, [seriesId, getSeries, setBookSeries]);
 
   if (!bookSeries) {
     return <></>;

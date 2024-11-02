@@ -75,8 +75,29 @@ export const createDB = <T extends object>({
     });
   };
 
+  const list = async () => {
+    const store = await getStore('readonly');
+    return new Promise<T[]>((resolve) => {
+      try {
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result ?? []);
+        req.onerror = () => {
+          console.error(
+            `get error=${req.error} dbName=${dbName} storeName=${storeName}`
+          );
+          resolve([]);
+        };
+      } catch (err) {
+        console.error(
+          `get error=${err} dbName=${dbName} storeName=${storeName}`
+        );
+      }
+    });
+  };
+
   return {
     get,
     put,
+    list,
   };
 };

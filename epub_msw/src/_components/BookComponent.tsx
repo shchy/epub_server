@@ -5,21 +5,23 @@ import { useEffect, useState } from 'react';
 
 export const BookComponent = () => {
   const { bookId } = useParams();
-  const { getBook } = useBookLibrary();
+  const { epubDownload, getBook } = useBookLibrary();
   const [pages, setPages] = useState<Omit<PageProp, 'currentPage'>[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     (async () => {
       if (!bookId) return;
-      const ctrl = await getBook(bookId);
-      if (!ctrl) {
+      // ダウンロード
+      await epubDownload(bookId);
+
+      const book = await getBook(bookId);
+      if (!book) {
         setPages([]);
         return;
       }
-      if (!ctrl) return;
 
-      const pages = [...Array(ctrl.pageCount).keys()].map<
+      const pages = [...Array(book.pageCount).keys()].map<
         Omit<PageProp, 'currentPage'>
       >((i) => ({
         bookId: bookId,
@@ -27,14 +29,13 @@ export const BookComponent = () => {
       }));
       setPages(pages);
     })();
-  }, [bookId, getBook]);
+  }, [bookId, epubDownload, getBook]);
 
   const next = async () => {
     setCurrentPage(currentPage + 1);
   };
 
   if (!bookId) return <></>;
-
   return (
     <div
       style={{
