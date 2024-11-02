@@ -32,7 +32,7 @@ export const SeriesComponent = () => {
               justifyContent: 'center',
             }}
           >
-            <a key={b.id} href={`/book/${b.id}`}>
+            <a key={b.id} href={`/series/${seriesId}/book/${b.id}`}>
               {b.name}
             </a>
           </div>

@@ -19,7 +19,7 @@ export const HomeComponent = () => {
     (async () => {
       setSeries(await getSeries());
     })();
-  }, []);
+  }, [getSeries]);
 
   return (
     <Box>

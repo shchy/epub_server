@@ -4,7 +4,8 @@ import { useElementSize } from '../_services';
 export const SizeFitComponent = ({
   isHide,
   children,
-}: React.PropsWithChildren<{ isHide?: boolean }>) => {
+  transformOrigin,
+}: React.PropsWithChildren<{ isHide?: boolean; transformOrigin?: string }>) => {
   const {
     ref: parentRef,
     size: parentSize,
@@ -37,8 +38,8 @@ export const SizeFitComponent = ({
 
     // 親フレームに合わせて拡縮
     targetRef.current.style.transform = `scale(${r})`;
-    targetRef.current.style.transformOrigin = 'top left';
-  }, [parentSize, targetSize, targetRef, isHide]);
+    targetRef.current.style.transformOrigin = transformOrigin ?? 'center';
+  }, [parentSize, targetSize, targetRef, isHide, transformOrigin]);
 
   // safari対策
   useEffect(() => {
@@ -54,7 +55,10 @@ export const SizeFitComponent = ({
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        display: isHide ? 'none' : undefined,
+        display: isHide ? 'none' : 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
       <div ref={targetRef} style={{ position: 'absolute' }}>

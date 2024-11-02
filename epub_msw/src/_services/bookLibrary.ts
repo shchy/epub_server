@@ -10,7 +10,10 @@ export interface BookLibrary {
     bookId: string,
     pageIndex: number
   ) => Promise<string | undefined>;
-  epubDownload: (bookId: string) => Promise<void>;
+  epubDownload: (
+    bookId: string,
+    setProgress: (v: number) => void
+  ) => Promise<void>;
 }
 
 export const CreateBookLibrary = (): BookLibrary => {
@@ -57,7 +60,10 @@ export const CreateBookLibrary = (): BookLibrary => {
     return await repo.getPage(bookId, pageIndex);
   };
 
-  const epubDownload = async (bookId: string) => {
+  const epubDownload = async (
+    bookId: string,
+    setProgress: (v: number) => void
+  ) => {
     try {
       const book = await repo.getBook(bookId);
       if (!book) return;
@@ -76,7 +82,10 @@ export const CreateBookLibrary = (): BookLibrary => {
       console.log('done read epub', bookId);
 
       const ctrl = CreateEpubController(epub);
-      for (const index of [...Array(epub.spine.length).keys()]) {
+      const count = epub.spine.length;
+      for (const index of [...Array(count).keys()]) {
+        const progress = (index + 1) / count;
+        setProgress(progress);
         console.log('will save page', bookId, index);
         const item = await repo.getPage(bookId, index);
         if (!item) {
