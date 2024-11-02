@@ -22,9 +22,18 @@ export const SeriesComponent = () => {
     <Box>
       {bookSeries.books.map((b) => {
         return (
-          <a key={b.id} href={`/book/${b.id}`}>
-            {b.name}
-          </a>
+          <div
+            key={b.id}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
+            <a key={b.id} href={`/book/${b.id}`}>
+              {b.name}
+            </a>
+          </div>
         );
       })}
     </Box>

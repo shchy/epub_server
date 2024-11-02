@@ -96,6 +96,7 @@ export const useElementSize = () => {
       childList: true,
       subtree: true,
     });
+    handleResize();
 
     ref.current.removeEventListener('resize', handleResize);
     ref.current.addEventListener('resize', handleResize);
@@ -107,5 +108,6 @@ export const useElementSize = () => {
   return {
     ref,
     size,
+    handleResize,
   };
 };

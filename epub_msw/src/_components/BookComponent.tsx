@@ -10,20 +10,24 @@ export const BookComponent = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
-    if (!bookId) return;
-    const book = getBook(bookId);
-    if (!book) {
-      setPages([]);
-      return;
-    }
-    const pages = [...Array(book.pageCount).keys()].map<
-      Omit<PageProp, 'currentPage'>
-    >((i) => ({
-      book: book,
-      index: i,
-    }));
-    setPages(pages);
-  }, [bookId, getBook, currentPage]);
+    (async () => {
+      if (!bookId) return;
+      const ctrl = await getBook(bookId);
+      if (!ctrl) {
+        setPages([]);
+        return;
+      }
+      if (!ctrl) return;
+
+      const pages = [...Array(ctrl.pageCount).keys()].map<
+        Omit<PageProp, 'currentPage'>
+      >((i) => ({
+        bookId: bookId,
+        index: i,
+      }));
+      setPages(pages);
+    })();
+  }, [bookId, getBook]);
 
   const next = async () => {
     setCurrentPage(currentPage + 1);

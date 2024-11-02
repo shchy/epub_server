@@ -133,7 +133,7 @@ export const CreateEpubController = (epub: Epub) => {
 
   const domParser = new DOMParser();
 
-  const getPage = (index: number): Promise<HTMLHtmlElement | undefined> => {
+  const getPage = (index: number): Promise<string | undefined> => {
     return new Promise((resolve) => {
       if (index < 0 || epub.spine.length <= index) {
         resolve(undefined);
@@ -187,7 +187,7 @@ export const CreateEpubController = (epub: Epub) => {
         // };
       }
 
-      resolve(pageDom.querySelector('html') ?? undefined);
+      resolve(pageDom.querySelector('html')?.outerHTML);
     });
   };
 
@@ -207,6 +207,7 @@ export const CreateEpubController = (epub: Epub) => {
     };
   })();
   return {
+    epub,
     getCoverImage,
     getPage,
     isFixedLayout,

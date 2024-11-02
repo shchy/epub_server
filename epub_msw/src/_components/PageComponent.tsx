@@ -1,33 +1,36 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SizeFitComponent } from './SizeFitComponent';
-import { APIPath, Book } from '../_services';
+import { useBookLibrary } from '../_services';
+
+const PRE_LOAD_SIZE = 3;
 
 export interface PageProp {
-  book: Book;
+  bookId: string;
   index: number;
   currentPage: number;
 }
-export const PageComponent = ({ book, index, currentPage }: PageProp) => {
+export const PageComponent = ({ bookId, index, currentPage }: PageProp) => {
+  const { getBookPage } = useBookLibrary();
   const [htmlPage, setHtmlPage] = useState<string>();
   const isShow = useMemo(() => currentPage === index, [currentPage, index]);
 
   useEffect(() => {
     (async () => {
-      const isPreload = Math.abs(currentPage - index) < 3;
+      const isPreload = Math.abs(currentPage - index) < PRE_LOAD_SIZE;
       if (!isPreload) {
         setHtmlPage(undefined);
         return;
       } else if (htmlPage !== undefined) {
         return;
       }
-      const url = APIPath.getBookPage
-        .replace(':id', book.id)
-        .replace(':page', index.toString());
-      const res = await fetch(url);
-      const html = await res.text();
-      setHtmlPage(html);
+      try {
+        const html = await getBookPage(bookId, index);
+        setHtmlPage(html);
+      } catch (err) {
+        alert(err);
+      }
     })();
-  }, [book, index, currentPage, htmlPage]);
+  }, [bookId, index, currentPage, htmlPage, getBookPage]);
 
   if (!htmlPage) {
     return <></>;

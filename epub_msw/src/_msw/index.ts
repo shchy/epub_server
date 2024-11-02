@@ -1,13 +1,16 @@
 import { HttpResponse, http } from 'msw';
 import { SetupWorker, setupWorker } from 'msw/browser';
 import {
-  APIPath,
   BookSeries,
   CreateEpub,
   CreateEpubController,
-  Epub,
   createDB,
 } from '../_services';
+
+export const APIPath = {
+  getSeries: '/api/series',
+  getBookPage: '/api/book/:id/:page',
+} as const;
 
 const VERSION = 'v1';
 interface bookIndex {
@@ -17,7 +20,7 @@ interface bookIndex {
 
 export interface EpubStoreItem {
   id: string;
-  epub: Epub;
+  epub: ArrayBuffer;
 }
 
 const seriesStore = createDB<bookIndex>({
@@ -26,31 +29,36 @@ const seriesStore = createDB<bookIndex>({
   keyPath: 'version',
 });
 const bookStore = createDB<EpubStoreItem>({
-  dbName: 'bookDB',
+  dbName: 'bookDB5',
   storeName: 'books',
   keyPath: 'id',
 });
 
 const getEpub = async (bookId: string) => {
-  let bookData = await bookStore.get(bookId);
-  if (!bookData) {
-    const series = await seriesStore.get(VERSION);
-    const book = series?.series
-      .flatMap((x) => x.books)
-      .find((x) => x.id === bookId);
+  try {
+    let bookData = await bookStore.get(bookId);
 
-    if (!book) return;
+    if (!bookData) {
+      const series = await seriesStore.get(VERSION);
+      const book = series?.series
+        .flatMap((x) => x.books)
+        .find((x) => x.id === bookId);
+      if (!book) return;
 
-    const response = await fetch(`/books/${book.filePath}`);
-    const data = await response.arrayBuffer();
-    const epub = CreateEpub(new Uint8Array(data));
-    bookData = {
-      id: book.id,
-      epub: epub,
-    };
-    await bookStore.put(bookData);
+      const response = await fetch(`/books/${book.filePath}`);
+      const data = await response.arrayBuffer();
+      bookData = {
+        id: book.id,
+        epub: data,
+      };
+
+      await bookStore.put(bookData);
+    }
+    const epub = CreateEpub(new Uint8Array(bookData.epub));
+    return epub;
+  } catch (err) {
+    console.error('getEpub error', err);
   }
-  return bookData;
 };
 
 export const worker: SetupWorker = setupWorker(
@@ -90,11 +98,11 @@ export const worker: SetupWorker = setupWorker(
       const epub = await getEpub(id as string);
       if (!epub) return;
 
-      const ctrl = CreateEpubController(epub.epub);
+      const ctrl = CreateEpubController(epub);
       const pageHtml = await ctrl.getPage(pageIndex);
       if (!pageHtml) return;
 
-      return HttpResponse.html(pageHtml.outerHTML);
+      return HttpResponse.html(pageHtml);
     }),
   ]
 );

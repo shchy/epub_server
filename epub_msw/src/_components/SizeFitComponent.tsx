@@ -5,10 +5,19 @@ export const SizeFitComponent = ({
   isHide,
   children,
 }: React.PropsWithChildren<{ isHide?: boolean }>) => {
-  const { ref: parentRef, size: parentSize } = useElementSize();
-  const { ref: targetRef, size: targetSize } = useElementSize();
+  const {
+    ref: parentRef,
+    size: parentSize,
+    handleResize: parentResize,
+  } = useElementSize();
+  const {
+    ref: targetRef,
+    size: targetSize,
+    handleResize: targetResize,
+  } = useElementSize();
 
   useEffect(() => {
+    if (isHide) return;
     if (!targetRef.current) return;
 
     // サイズが確定してなかったら処理しない
@@ -29,7 +38,13 @@ export const SizeFitComponent = ({
     // 親フレームに合わせて拡縮
     targetRef.current.style.transform = `scale(${r})`;
     targetRef.current.style.transformOrigin = 'top left';
-  }, [parentSize, targetSize, targetRef]);
+  }, [parentSize, targetSize, targetRef, isHide]);
+
+  // safari対策
+  useEffect(() => {
+    parentResize();
+    targetResize();
+  }, [isHide]);
 
   return (
     <div

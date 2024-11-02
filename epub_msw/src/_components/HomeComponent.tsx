@@ -2,15 +2,18 @@ import { Box } from '@mui/material';
 import { useBookLibrary } from '../_services';
 
 export const HomeComponent = () => {
-  const { series } = useBookLibrary();
+  const { series, clearCache } = useBookLibrary();
 
   return (
     <Box>
       {series.map((s) => {
         return (
-          <a key={s.id} href={`/series/${s.id}`}>
-            {s.name}
-          </a>
+          <div key={s.id} style={{ display: 'flex', flexDirection: 'column' }}>
+            <a key={s.id} href={`/series/${s.id}`}>
+              {s.name}
+            </a>
+            <button onClick={clearCache}>clear cache</button>
+          </div>
         );
       })}
     </Box>

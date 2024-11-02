@@ -35,18 +35,43 @@ export const createDB = <T extends object>({
   const get = async (key: IDBValidKey) => {
     const store = await getStore('readonly');
     return new Promise<T | undefined>((resolve) => {
-      const req = store.get(key);
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => resolve(undefined);
+      try {
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => {
+          console.error(
+            `get error=${req.error} dbName=${dbName} storeName=${storeName}`
+          );
+          resolve(undefined);
+        };
+      } catch (err) {
+        console.error(
+          `get error=${err} dbName=${dbName} storeName=${storeName}`
+        );
+      }
     });
   };
 
   const put = async (value: T) => {
     const store = await getStore('readwrite');
     return new Promise<T>((resolve, reject) => {
-      const req = store.put(value);
-      req.onsuccess = () => resolve(value);
-      req.onerror = () => reject();
+      try {
+        const req = store.put(value);
+        req.onsuccess = () => {
+          resolve(value);
+        };
+        req.onerror = () => {
+          console.error(
+            `put error=${req.error} dbName=${dbName} storeName=${storeName}`
+          );
+          reject();
+        };
+      } catch (err) {
+        console.error(
+          `put error=${err} dbName=${dbName} storeName=${storeName}`
+        );
+        reject();
+      }
     });
   };
 
