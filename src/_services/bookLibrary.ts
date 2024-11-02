@@ -25,21 +25,21 @@ export const CreateBookLibrary = (): BookLibrary => {
       return seriesList;
     }
 
-    const bookIndex = {
-      books: [
-        {
-          id: '618908_001',
-          name: 'SPY×FAMILY 1',
-          faceB64: '',
-          pageCount: 219,
-          filePath: '618908_001_SPY×FAMILY 1.epub',
-        },
-      ],
-    };
+    const res = await fetch(`/books/index.json`);
+    const bookIndex = await res.json();
+    // [
+    //   {
+    //     id: '618908_001',
+    //     name: 'SPY×FAMILY 1',
+    //     faceB64: '',
+    //     pageCount: 219,
+    //     filePath: '618908_001_SPY×FAMILY 1.epub',
+    //   },
+    // ];
 
     const xs = await repo.getSeries();
     const books = xs.flatMap((x) => x.books);
-    for (const book of bookIndex.books) {
+    for (const book of bookIndex) {
       const exists = books.some((x) => x.id === book.id);
       if (exists) continue;
       await repo.putBook(book);

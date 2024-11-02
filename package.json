@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm msw && vite",
-    "build": "pnpm msw && tsc -b && vite build",
+    "dev": "vite",
+    "build": "pnpm prepare && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "prepare": "pnpm exec tsx prepare.ts",
     "msw": "msw init ./public --save"
   },
   "dependencies": {
@@ -22,7 +23,8 @@
     "path-browserify-esm": "^1.0.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.27.0",
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

@@ -43,11 +43,19 @@ export const createBookRepository = () => {
     // _で区切ったidでシリーズをまとめる
     const agg = books.reduce((ps: BookSeries[], book: Book) => {
       const [seriesId] = book.id.split('_');
+      const seriesName = (() => {
+        const ns = book.name.split(' ');
+        if (ns.length === 1) {
+          return ns[0];
+        }
+        return ns.slice(0, -1).join(' ');
+      })();
+
       let series = ps.find((p) => p.id === seriesId);
       if (!series) {
         series = {
           id: seriesId,
-          name: book.name.split(' ').slice(0, -1).join(' '),
+          name: seriesName,
           books: [],
         };
         ps.push(series);

@@ -131,9 +131,8 @@ export const CreateEpubController = (epub: Epub) => {
     return epubData[`EPUB/${coverItem.href}`];
   };
 
-  const domParser = new DOMParser();
-
   const getPage = (index: number): Promise<string | undefined> => {
+    const domParser = new DOMParser();
     return new Promise((resolve) => {
       if (index < 0 || epub.spine.length <= index) {
         resolve(undefined);

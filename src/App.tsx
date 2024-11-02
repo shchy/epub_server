@@ -66,7 +66,7 @@ function App() {
               <Typography
                 variant="caption"
                 component="div"
-                sx={{ color: 'text.secondary' }}
+                sx={{ color: '#fff' }}
               >{`${Math.round((progress ?? 0) * 100)}%`}</Typography>
             )}
           </Box>
