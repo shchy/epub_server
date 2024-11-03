@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageComponent, PageProp } from './PageComponent';
-import { useBookLibrary, useLoading } from '../_services';
+import { iOSIsInstalled, useBookLibrary, useLoading } from '../_services';
 import { useEffect, useState } from 'react';
 import { Backdrop, IconButton, Slider, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -153,7 +153,7 @@ export const BookControl = ({
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr',
-          gridTemplateRows: '6rem 1fr 6rem',
+          gridTemplateRows: iOSIsInstalled ? '2rem 1fr 5rem' : '4rem 1fr 5rem',
           height: '100vh',
           width: '100%',
         }}
@@ -169,19 +169,19 @@ export const BookControl = ({
             justifyItems: 'center',
             alignItems: 'center',
             gap: '1rem',
-            padding: '3rem 1rem 0 1rem',
+            padding: iOSIsInstalled ? '0rem 1rem 0 1rem' : '2rem 1rem 0 1rem',
           }}
         >
           <Typography
             variant="caption"
             component="div"
-            sx={{ color: 'text.primary', gridColumn: '2/3' }}
+            sx={{ color: 'text.primary', gridColumn: '1/4', gridRow: '1/2' }}
           >
             {title}
           </Typography>
           <IconButton
             aria-label="close"
-            sx={{ gridColumn: '3/4' }}
+            sx={{ gridColumn: '3/4', gridRow: '1/2' }}
             onClick={onClose}
             size="small"
           >
@@ -205,7 +205,7 @@ export const BookControl = ({
             justifyContent: 'center',
             alignItems: 'center',
             gap: '1rem',
-            padding: '0 1rem 3rem 1rem',
+            padding: iOSIsInstalled ? '0 1rem 3rem 1rem' : '0 1rem 3rem 1rem',
           }}
         >
           <Typography
