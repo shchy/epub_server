@@ -44,7 +44,6 @@ export default defineConfig({
   plugins: [react(), basicSsl({}), pwa],
   server: {
     host: '0.0.0.0',
-    https: false,
   },
   preview: {
     host: '0.0.0.0',
