@@ -1,4 +1,10 @@
-import { readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
+import {
+  readdirSync,
+  statSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+} from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import { Book, CreateEpub, CreateEpubController } from './src/_services';
@@ -18,9 +24,9 @@ const epubList = readdirSync(bookDir)
   .filter((filepath) => filepath.endsWith('.epub'));
 
 const books: Book[] = [];
-const beforeIndex = JSON.parse(
-  readFileSync(indexFilePath).toString('utf8')
-) as Book[];
+const beforeIndex = existsSync(indexFilePath)
+  ? (JSON.parse(readFileSync(indexFilePath).toString('utf8')) as Book[])
+  : [];
 
 for (const epubFilepath of epubList) {
   const epubFileName = path.basename(epubFilepath);
