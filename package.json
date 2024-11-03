@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "pnpm build && pnpm preview",
-    "indexing": "pnpm exec tsx prepare.ts",
+    "indexing": "pnpm exec tsx indexing.ts",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg"
   },
   "dependencies": {
