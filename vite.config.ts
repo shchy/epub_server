@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import basicSsl from '@vitejs/plugin-basic-ssl';
+// import basicSsl from '@vitejs/plugin-basic-ssl';
+import fs from 'fs';
 
-const pwa = VitePWA({
+const pwa = await VitePWA({
   registerType: 'autoUpdate',
-  includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png'],
+  includeAssets: ['**/*'],
   injectRegister: 'auto',
   manifest: {
     name: 'マンガ',
@@ -37,16 +38,26 @@ const pwa = VitePWA({
       },
     ],
   },
+  workbox: {
+    globPatterns: ['**/*'],
+    globIgnores: ['**/*.epub'],
+    maximumFileSizeToCacheInBytes: 1024 * 1024 * 1024 * 1,
+    navigateFallback: '/index.html',
+  },
 });
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), basicSsl({}), pwa],
+  plugins: [react(), pwa],
   server: {
     host: '0.0.0.0',
   },
   preview: {
     host: '0.0.0.0',
     port: 443,
+    https: {
+      cert: fs.readFileSync('./cert/raspberrypi.local.pem'),
+      key: fs.readFileSync('./cert/raspberrypi.local-key.pem'),
+    },
   },
 });

@@ -27,15 +27,6 @@ export const CreateBookLibrary = (): BookLibrary => {
 
     const res = await fetch(`/books/index.json`);
     const bookIndex = await res.json();
-    // [
-    //   {
-    //     id: '618908_001',
-    //     name: 'SPY×FAMILY 1',
-    //     faceB64: '',
-    //     pageCount: 219,
-    //     filePath: '618908_001_SPY×FAMILY 1.epub',
-    //   },
-    // ];
 
     const xs = await repo.getSeries();
     const books = xs.flatMap((x) => x.books);
