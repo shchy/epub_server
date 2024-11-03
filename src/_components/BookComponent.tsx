@@ -153,7 +153,7 @@ export const BookControl = ({
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr',
-          gridTemplateRows: '2rem 1fr 2rem',
+          gridTemplateRows: '6rem 1fr 6rem',
           height: '100vh',
           width: '100%',
         }}
@@ -169,7 +169,7 @@ export const BookControl = ({
             justifyItems: 'center',
             alignItems: 'center',
             gap: '1rem',
-            padding: '0 1rem',
+            padding: '3rem 1rem 0 1rem',
           }}
         >
           <Typography
@@ -205,7 +205,7 @@ export const BookControl = ({
             justifyContent: 'center',
             alignItems: 'center',
             gap: '1rem',
-            padding: '0 1rem',
+            padding: '0 1rem 3rem 1rem',
           }}
         >
           <Typography
