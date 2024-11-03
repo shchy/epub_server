@@ -1,5 +1,6 @@
 import { readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 import { Book, CreateEpub, CreateEpubController } from './src/_services';
 
 const bookDir = './public/books';
@@ -22,13 +23,16 @@ for (const epubFilepath of epubList) {
   const epub = CreateEpub(fileData);
   const ctrl = CreateEpubController(epub);
   const coverImage = ctrl.getCoverImage();
+  const thumbnail = coverImage
+    ? await sharp(coverImage).resize(150).toBuffer()
+    : undefined;
 
   books.push({
     id: epub.metaData.identifier,
     name: epub.metaData.title,
     filePath: path.basename(epubFilepath),
     pageCount: epub.spine.length,
-    faceB64: coverImage ? Buffer.from(coverImage).toString('base64') : '',
+    faceB64: thumbnail ? thumbnail.toString('base64') : '',
   });
 }
 

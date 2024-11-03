@@ -36,7 +36,7 @@ export const useScreenSize = () => {
     return () => _window.removeEventListener('resize', handleResize);
   }, [_window, isClient, handleResize]);
 
-  useEffect(() => handleResize(), []);
+  useEffect(() => handleResize(), [handleResize]);
 
   return windowSize;
 };

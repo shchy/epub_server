@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MakeContext } from './contextHelper';
 
-export const CreateLoading = () => {
+const CreateLoading = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<number>();
 

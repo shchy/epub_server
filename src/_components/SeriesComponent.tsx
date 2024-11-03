@@ -29,7 +29,7 @@ export const SeriesComponent = () => {
       <Grid container spacing={2}>
         {bookSeries.books.map((b) => {
           return (
-            <Grid size={{ xs: 4, md: 3 }}>
+            <Grid key={b.id} size={{ xs: 4, md: 3 }}>
               <img
                 src={`data:image/png;base64,${b.faceB64}`}
                 alt={b.name}

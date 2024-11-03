@@ -45,7 +45,7 @@ export const SizeFitComponent = ({
   useEffect(() => {
     parentResize();
     targetResize();
-  }, [isHide]);
+  }, [isHide, parentResize, targetResize]);
 
   return (
     <div

@@ -75,7 +75,7 @@ export const PageHolderComponent = ({
 
   useEffect(() => {
     updateSize();
-  }, [isShow]);
+  }, [isShow, updateSize]);
 
   return (
     <div
