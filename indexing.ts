@@ -11,6 +11,9 @@ import { Book, CreateEpub, CreateEpubController } from './src/_services';
 
 const bookDir = './public/books';
 const indexFilePath = path.join(bookDir, 'index.json');
+const beforeBooks = existsSync(indexFilePath)
+  ? (JSON.parse(readFileSync(indexFilePath).toString('utf8')) as Book[])
+  : [];
 
 const epubList = readdirSync(bookDir)
   .map((fspath) => {
@@ -23,35 +26,44 @@ const epubList = readdirSync(bookDir)
   })
   .filter((filepath) => filepath.endsWith('.epub'));
 
-const books: Book[] = [];
-const beforeIndex = existsSync(indexFilePath)
-  ? (JSON.parse(readFileSync(indexFilePath).toString('utf8')) as Book[])
-  : [];
+// 存在しなくなったepubを除外して初期値とする
+const fileNames = epubList.map((x) => path.basename(x));
+const books: Book[] = beforeBooks.filter((x) => fileNames.includes(x.filePath));
+
+const save = () =>
+  writeFileSync(indexFilePath, JSON.stringify(books, undefined, 2));
+
+// raspberrypiがすぐ落ちるから一旦セーブ
+save();
 
 for (const epubFilepath of epubList) {
-  const epubFileName = path.basename(epubFilepath);
-  const findOne = beforeIndex.find((x) => x.filePath === epubFileName);
-  if (findOne) {
-    books.push(findOne);
-    continue;
+  try {
+    const epubFileName = path.basename(epubFilepath);
+    // 登録済みならスキップ
+    const findOne = books.find((x) => x.filePath === epubFileName);
+    if (findOne) {
+      continue;
+    }
+
+    console.log('epubFilepath', epubFilepath);
+    const fileData = readFileSync(epubFilepath);
+    const epub = CreateEpub(fileData);
+    const ctrl = CreateEpubController(epub);
+    const coverImage = ctrl.getCoverImage();
+    const thumbnail = coverImage
+      ? await sharp(coverImage).resize(150).toBuffer()
+      : undefined;
+
+    books.push({
+      id: epub.metaData.identifier,
+      name: epub.metaData.title,
+      filePath: epubFileName,
+      pageCount: epub.spine.length,
+      faceB64: thumbnail ? thumbnail.toString('base64') : '',
+    });
+
+    save();
+  } catch (err) {
+    console.error('error', err);
   }
-
-  console.log('epubFilepath', epubFilepath);
-  const fileData = readFileSync(epubFilepath);
-  const epub = CreateEpub(fileData);
-  const ctrl = CreateEpubController(epub);
-  const coverImage = ctrl.getCoverImage();
-  const thumbnail = coverImage
-    ? await sharp(coverImage).resize(150).toBuffer()
-    : undefined;
-
-  books.push({
-    id: epub.metaData.identifier,
-    name: epub.metaData.title,
-    filePath: epubFileName,
-    pageCount: epub.spine.length,
-    faceB64: thumbnail ? thumbnail.toString('base64') : '',
-  });
 }
-
-writeFileSync(indexFilePath, JSON.stringify(books, undefined, 2));
