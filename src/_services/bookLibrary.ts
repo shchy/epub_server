@@ -49,36 +49,27 @@ export const CreateBookLibrary = () => {
       const book = await repo.getBook(bookId);
       if (!book) return;
       if (book.isCached) {
-        console.log(`${book.id} downloaded`);
         return;
       }
 
-      console.log('will fetch epub', bookId);
       const response = await fetch(`/books/${book.filePath}`);
       const data = await response.arrayBuffer();
-      console.log('done fetch epub', bookId);
-
-      console.log('will read epub', bookId);
       const epub = CreateEpub(new Uint8Array(data));
-      console.log('done read epub', bookId);
-
       const ctrl = CreateEpubController(epub);
       const count = epub.spine.length;
       for (const index of [...Array(count).keys()]) {
         const progress = (index + 1) / count;
         setProgress(progress);
-        console.log('will save page', bookId, index);
         const item = await repo.getPage(bookId, index);
         if (!item) {
           const html = await ctrl.getPage(index);
           if (!html) continue;
           await repo.putPage(bookId, index, html);
         }
-        console.log('done save page', bookId, index);
       }
       await repo.setCached(bookId);
     } catch (err) {
-      console.log('epubDownload error', err);
+      console.error('epubDownload error', err);
     }
   };
 

@@ -45,8 +45,8 @@ export const BookFrame = ({
         display: 'grid',
         gridTemplateColumns: '1fr',
         gridTemplateRows: '1fr',
-        height: '100vh',
-        maxHeight: '100vh',
+        height: '100%',
+        maxHeight: '100%',
         width: '100%',
       }}
       onClick={(e) => {
@@ -117,7 +117,7 @@ export const BookControl = ({
           display: 'grid',
           gridTemplateColumns: '1fr',
           gridTemplateRows: iOSIsInstalled ? '2rem 1fr 5rem' : '4rem 1fr 5rem',
-          height: '100vh',
+          height: '100%',
           width: '100%',
         }}
       >

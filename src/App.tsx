@@ -27,7 +27,13 @@ function App() {
   const { isLoading, progress } = useLoading();
   return (
     <BookLibraryProvider>
-      <Container fixed sx={{ height: '100vh' }}>
+      <Container
+        fixed
+        sx={{
+          height:
+            'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+        }}
+      >
         <RouterProvider router={router} />
       </Container>
       <LoadingComponent isLoading={isLoading} progress={progress} />

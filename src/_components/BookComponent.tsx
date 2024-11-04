@@ -58,11 +58,9 @@ export const BookComponent = () => {
 
   useEffect(() => {
     const page = searchParams.get('page');
-    console.log('page', page);
     if (!page) return;
 
     const pageIndex = parseInt(page);
-    console.log('pageIndex', pageIndex);
     toPage(pageIndex);
   }, [searchParams, toPage]);
 
