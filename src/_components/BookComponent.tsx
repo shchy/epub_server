@@ -61,9 +61,68 @@ export const BookComponent = () => {
       title={title}
       toPage={toPage}
     >
-      {pages.map((p) => {
-        return <PageComponent key={p.index} {...p} currentPage={currentPage} />;
-      })}
+      <Carousel
+        list={pages}
+        isHide={(item) => currentPage !== item.index}
+        element={({ item }) => {
+          return (
+            // <SizeFitComponent>
+            //   <div
+            //     style={{
+            //       background: item.index % 2 === 0 ? 'red' : 'blue',
+            //       width: 900,
+            //       height: 1600,
+            //     }}
+            //   ></div>
+            // </SizeFitComponent>
+            <PageComponent
+              key={item.index}
+              {...item}
+              currentPage={currentPage}
+            />
+          );
+        }}
+      />
     </BookFrame>
+  );
+};
+
+export const Carousel = <T,>({
+  list,
+  element,
+  isHide,
+}: {
+  list: T[];
+  element: React.FC<{ item: T }>;
+  isHide?: (item: T) => boolean;
+}) => {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        // overflow: 'auto',
+        // position: 'relative',
+        whiteSpace: 'nowrap',
+      }}
+      dir="rtl"
+    >
+      {list.map((item) => {
+        if (isHide !== undefined && isHide(item)) {
+          return <></>;
+        }
+        return (
+          <div
+            style={{
+              display: 'inline-block',
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            {element({ item })}
+          </div>
+        );
+      })}
+    </div>
   );
 };

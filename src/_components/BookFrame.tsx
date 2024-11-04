@@ -45,11 +45,16 @@ export const BookFrame = ({
         style={{
           gridColumn: '1/2',
           gridRow: '1/2',
-          overflow: 'hidden',
+          // overflow: 'hidden',
+
+          // height: '100vh',
+          // width: '100%',
+
           // display: 'flex',
           // flexDirection: 'row-reverse',
           // justifyContent: 'center',
           // alignItems: 'center',
+          // direction: 'rtl',
         }}
       >
         {children}
