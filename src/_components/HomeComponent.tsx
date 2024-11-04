@@ -50,7 +50,9 @@ export const HomeComponent = () => {
                 width="100%"
                 loading="lazy"
                 onClick={() =>
-                  navigate(`/series/${book.series.id}/book/${book.id}`)
+                  navigate(
+                    `/series/${book.series.id}/book/${book.id}?page=${item.pageIndex}`
+                  )
                 }
               />
             );

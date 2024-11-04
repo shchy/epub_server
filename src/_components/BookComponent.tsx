@@ -1,7 +1,7 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PageComponent, PageProp } from './PageComponent';
 import { useBookLibrary, useLoading } from '../_services';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { BookFrame } from './BookFrame';
 import { Carousel } from './Carousel';
@@ -9,8 +9,9 @@ import { Carousel } from './Carousel';
 export const BookComponent = () => {
   const navigate = useNavigate();
   const { bookId } = useParams();
+  const [searchParams] = useSearchParams();
   const { loading } = useLoading();
-  const { epubDownload, getBook } = useBookLibrary();
+  const { epubDownload, getBook, saveRecent } = useBookLibrary();
   const [pages, setPages] = useState<Omit<PageProp, 'currentPage'>[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [title, setTitle] = useState('');
@@ -38,10 +39,14 @@ export const BookComponent = () => {
     });
   }, []);
 
-  const toPage = (pageIndex: number) => {
-    if (pageIndex < 0 || pages.length <= pageIndex) return;
-    setCurrentPage(pageIndex);
-  };
+  const toPage = useCallback(
+    (pageIndex: number) => {
+      if (pageIndex < 0 || pages.length <= pageIndex) return;
+      setCurrentPage(pageIndex);
+      if (bookId) saveRecent(bookId, pageIndex);
+    },
+    [bookId, setCurrentPage, pages, saveRecent]
+  );
 
   const next = async () => {
     toPage(currentPage + 1);
@@ -50,6 +55,16 @@ export const BookComponent = () => {
   const prev = async () => {
     toPage(currentPage - 1);
   };
+
+  useEffect(() => {
+    const page = searchParams.get('page');
+    console.log('page', page);
+    if (!page) return;
+
+    const pageIndex = parseInt(page);
+    console.log('pageIndex', pageIndex);
+    toPage(pageIndex);
+  }, [searchParams, toPage]);
 
   if (!bookId) return <></>;
   return (
