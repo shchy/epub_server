@@ -13,6 +13,7 @@ export interface Book {
   pageCount: number;
   filePath: string;
   isCached?: boolean;
+  addDate?: number;
 }
 
 // 本のページ情報
@@ -23,6 +24,13 @@ interface PageDBItem {
 const createPageDBItemKey = (bookId: string, pageIndex: number) =>
   `${bookId}!${pageIndex}`;
 // 本のページ情報保存済みかどうかを保持する
+
+// 最近読んだ本
+export interface OpenRecent {
+  bookId: string;
+  pageIndex: number;
+  date: number;
+}
 
 export const createBookRepository = () => {
   const bookStore = createDB<Book>({
@@ -35,6 +43,12 @@ export const createBookRepository = () => {
     dbName: 'pageDB',
     storeName: 'pages',
     keyPath: 'id',
+  });
+
+  const recentStore = createDB<OpenRecent>({
+    dbName: 'recentDB',
+    storeName: 'recents',
+    keyPath: 'bookId',
   });
 
   const getSeries = async () => {
@@ -94,6 +108,18 @@ export const createBookRepository = () => {
     await bookStore.put(book);
   };
 
+  const saveRecent = async (bookId: string, index: number) => {
+    await recentStore.put({
+      bookId: bookId,
+      pageIndex: index,
+      date: new Date().getTime(),
+    });
+  };
+
+  const listRecents = async () => {
+    return await recentStore.list();
+  };
+
   return {
     getSeries,
     getBook,
@@ -101,5 +127,7 @@ export const createBookRepository = () => {
     getPage,
     putPage,
     setCached,
+    saveRecent,
+    listRecents,
   };
 };

@@ -5,11 +5,17 @@ export const Carousel = <T,>({
   element,
   currentIndex,
   onChangeIndex,
+  direction,
+  itemHeight,
+  itemWidth,
 }: {
   list: T[];
   element: React.FC<{ item: T }>;
-  currentIndex: number;
+  currentIndex?: number;
   onChangeIndex?: (index: number) => void;
+  direction?: 'ltr' | 'rtl';
+  itemWidth?: string;
+  itemHeight?: string;
 }) => {
   const parentElement = useRef<HTMLDivElement>(null);
   const [observer, setObserver] = useState<IntersectionObserver>();
@@ -37,6 +43,7 @@ export const Carousel = <T,>({
   }, [onChangeIndex]);
 
   useEffect(() => {
+    if (!currentIndex) return;
     const parent = parentElement.current;
     if (!parent) return;
     const target = Array.from(parent.children)[currentIndex];
@@ -55,12 +62,17 @@ export const Carousel = <T,>({
         overflowY: 'hidden',
         scrollSnapType: 'x mandatory',
         whiteSpace: 'nowrap',
-        direction: 'rtl',
+        direction: direction ?? 'ltr',
       }}
     >
       {list.map((item, i) => {
         return (
-          <CarouselItem key={i} observer={observer}>
+          <CarouselItem
+            key={i}
+            observer={observer}
+            itemHeight={itemHeight}
+            itemWidth={itemWidth}
+          >
             {element({ item })}
           </CarouselItem>
         );
@@ -70,9 +82,13 @@ export const Carousel = <T,>({
 };
 
 export const CarouselItem = ({
+  itemHeight,
+  itemWidth,
   observer,
   children,
 }: React.PropsWithChildren<{
+  itemWidth?: string;
+  itemHeight?: string;
   observer?: IntersectionObserver;
 }>) => {
   const targetElement = useRef<HTMLDivElement>(null);
@@ -87,8 +103,8 @@ export const CarouselItem = ({
       ref={targetElement}
       style={{
         display: 'inline-block',
-        width: '100%',
-        height: '100%',
+        width: itemWidth ?? '100%',
+        height: itemHeight ?? '100%',
         scrollSnapAlign: 'center',
       }}
     >

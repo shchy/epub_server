@@ -8,7 +8,7 @@ import { Carousel } from './Carousel';
 
 export const BookComponent = () => {
   const navigate = useNavigate();
-  const { seriesId, bookId } = useParams();
+  const { bookId } = useParams();
   const { loading } = useLoading();
   const { epubDownload, getBook } = useBookLibrary();
   const [pages, setPages] = useState<Omit<PageProp, 'currentPage'>[]>([]);
@@ -57,7 +57,7 @@ export const BookComponent = () => {
       currentPage={currentPage}
       next={next}
       prev={prev}
-      onClose={() => navigate(`/series/${seriesId}`)}
+      onClose={() => navigate(`/`)}
       pageCount={pages.length}
       title={title}
       toPage={toPage}
@@ -66,6 +66,7 @@ export const BookComponent = () => {
         list={pages}
         currentIndex={currentPage}
         onChangeIndex={toPage}
+        direction="rtl"
         element={({ item }) => {
           return (
             <PageComponent

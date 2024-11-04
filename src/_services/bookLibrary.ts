@@ -1,22 +1,9 @@
 import { MakeContext } from './contextHelper';
 import { CreateEpub, CreateEpubController } from './epub';
-import { Book, BookSeries, createBookRepository } from './bookRepository';
+import { BookSeries, createBookRepository } from './bookRepository';
 import { useState } from 'react';
 
-export interface BookLibrary {
-  getSeries: () => Promise<BookSeries[]>;
-  getBook: (bookId: string) => Promise<Book | undefined>;
-  getBookPage: (
-    bookId: string,
-    pageIndex: number
-  ) => Promise<string | undefined>;
-  epubDownload: (
-    bookId: string,
-    setProgress: (v: number) => void
-  ) => Promise<void>;
-}
-
-export const CreateBookLibrary = (): BookLibrary => {
+export const CreateBookLibrary = () => {
   const [seriesList, setSeriesList] = useState<BookSeries[]>([]);
   const repo = createBookRepository();
 
@@ -33,7 +20,10 @@ export const CreateBookLibrary = (): BookLibrary => {
     for (const book of bookIndex) {
       const exists = books.some((x) => x.id === book.id);
       if (exists) continue;
-      await repo.putBook(book);
+      await repo.putBook({
+        ...book,
+        addDate: book.addDate ?? new Date().getTime(),
+      });
     }
 
     const newList = await repo.getSeries();
@@ -92,13 +82,21 @@ export const CreateBookLibrary = (): BookLibrary => {
     }
   };
 
+  const saveRecent = repo.saveRecent;
+
+  const listRecents = repo.listRecents;
+
   return {
     getSeries,
     getBook,
     getBookPage,
     epubDownload,
+    saveRecent,
+    listRecents,
   };
 };
 
 export const { provider: BookLibraryProvider, use: useBookLibrary } =
   MakeContext(CreateBookLibrary);
+
+export type BookLibrary = ReturnType<typeof CreateBookLibrary>;
