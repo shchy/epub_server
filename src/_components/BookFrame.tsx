@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { iOSIsInstalled } from '../_services';
 import CloseIcon from '@mui/icons-material/Close';
 
+const SHOW_CONTROL_THRETHOULD = 0.2;
+const NEXT_PREV_THRETHOULD = 0.25;
+
 export const BookFrame = ({
   next,
   prev,
@@ -18,68 +21,58 @@ export const BookFrame = ({
   pageCount: number;
   next: () => void;
   prev: () => void;
-  toPage: (pageIndex: number) => Promise<void>;
+  toPage: (pageIndex: number) => void;
   onClose: () => void;
 }>) => {
   const [isShowControl, setIsShowControl] = useState(false);
   const handlePageClick = (xR: number, yR: number) => {
-    if (0.2 <= yR && yR <= 0.8) {
-      if (xR <= 0.5) next();
-      else prev();
-      return;
+    if (yR <= SHOW_CONTROL_THRETHOULD || 1 - SHOW_CONTROL_THRETHOULD <= yR) {
+      setIsShowControl(true);
+    } else if (xR <= NEXT_PREV_THRETHOULD) {
+      next();
+    } else if (1 - NEXT_PREV_THRETHOULD <= xR) {
+      prev();
     }
-    setIsShowControl(true);
   };
 
   return (
     <div
       style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+
         display: 'grid',
         gridTemplateColumns: '1fr',
         gridTemplateRows: '1fr',
         height: '100vh',
+        maxHeight: '100vh',
         width: '100%',
+      }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        const p = {
+          x: e.nativeEvent.offsetX / rect.width,
+          y: e.nativeEvent.offsetY / rect.height,
+        };
+
+        handlePageClick(p.x, p.y);
       }}
     >
       <div
         style={{
           gridColumn: '1/2',
           gridRow: '1/2',
-          // overflow: 'hidden',
+          overflow: 'hidden',
 
-          // height: '100vh',
-          // width: '100%',
-
-          // display: 'flex',
-          // flexDirection: 'row-reverse',
-          // justifyContent: 'center',
-          // alignItems: 'center',
-          // direction: 'rtl',
+          height: '100%',
+          width: '100%',
         }}
       >
         {children}
       </div>
-      <div
-        style={{
-          gridColumn: '1/2',
-          gridRow: '1/2',
-          zIndex: '1',
-          position: 'absolute',
-          top: '0',
-          bottom: '0',
-          left: '0',
-          right: '0',
-        }}
-        onClick={(e) => {
-          const rect = (e.target as HTMLElement).getBoundingClientRect();
-          const p = {
-            x: e.nativeEvent.offsetX / rect.width,
-            y: e.nativeEvent.offsetY / rect.height,
-          };
-
-          handlePageClick(p.x, p.y);
-        }}
-      ></div>
 
       <BookControl
         currentPage={currentPage}
@@ -163,7 +156,11 @@ export const BookControl = ({
             gridColumn: '1/2',
             gridRow: '2/3',
           }}
-          onClick={onHide}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onHide();
+          }}
         ></div>
         <div
           style={{

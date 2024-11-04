@@ -2,10 +2,9 @@ import { useEffect } from 'react';
 import { useElementSize } from '../_services';
 
 export const SizeFitComponent = ({
-  isHide,
   children,
   transformOrigin,
-}: React.PropsWithChildren<{ isHide?: boolean; transformOrigin?: string }>) => {
+}: React.PropsWithChildren<{ transformOrigin?: string }>) => {
   const {
     ref: parentRef,
     size: parentSize,
@@ -18,7 +17,6 @@ export const SizeFitComponent = ({
   } = useElementSize();
 
   useEffect(() => {
-    if (isHide) return;
     if (!targetRef.current) return;
 
     // サイズが確定してなかったら処理しない
@@ -39,13 +37,13 @@ export const SizeFitComponent = ({
     // 親フレームに合わせて拡縮
     targetRef.current.style.transform = `scale(${r})`;
     targetRef.current.style.transformOrigin = transformOrigin ?? 'center';
-  }, [parentSize, targetSize, targetRef, isHide, transformOrigin]);
+  }, [parentSize, targetSize, targetRef, transformOrigin]);
 
   // safari対策
   useEffect(() => {
     parentResize();
     targetResize();
-  }, [isHide, parentResize, targetResize]);
+  }, [parentResize, targetResize]);
 
   return (
     <div
@@ -55,7 +53,7 @@ export const SizeFitComponent = ({
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        display: isHide ? 'none' : 'flex',
+        display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',

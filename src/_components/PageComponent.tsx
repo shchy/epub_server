@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SizeFitComponent } from './SizeFitComponent';
 import { useBookLibrary } from '../_services';
 
@@ -12,7 +12,6 @@ export interface PageProp {
 export const PageComponent = ({ bookId, index, currentPage }: PageProp) => {
   const { getBookPage } = useBookLibrary();
   const [htmlPage, setHtmlPage] = useState<string>();
-  const isShow = useMemo(() => currentPage === index, [currentPage, index]);
 
   useEffect(() => {
     (async () => {
@@ -36,16 +35,10 @@ export const PageComponent = ({ bookId, index, currentPage }: PageProp) => {
     return <></>;
   }
 
-  return <PageHolderComponent page={htmlPage} isShow={isShow} />;
+  return <PageHolderComponent page={htmlPage} />;
 };
 
-export const PageHolderComponent = ({
-  page,
-  isShow,
-}: {
-  page: string;
-  isShow: boolean;
-}) => {
+export const PageHolderComponent = ({ page }: { page: string }) => {
   const frame = useRef<HTMLIFrameElement>(null);
   const [frameSize, setFrameSize] = useState<Pick<DOMRect, 'width' | 'height'>>(
     {
@@ -75,28 +68,33 @@ export const PageHolderComponent = ({
 
   useEffect(() => {
     updateSize();
-  }, [isShow, updateSize]);
+  }, [updateSize]);
 
   return (
     <div
       style={{
         width: '100%',
         height: '100%',
-        display: isShow ? undefined : 'none',
+        position: 'relative',
       }}
     >
-      <SizeFitComponent isHide={!isShow}>
-        <iframe
-          ref={frame}
-          srcDoc={page}
-          style={{
-            border: 'none',
-            overflow: 'hidden',
-          }}
-          width={frameSize.width}
-          height={frameSize.height}
-        />
-      </SizeFitComponent>
+      <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
+        <SizeFitComponent>
+          <iframe
+            ref={frame}
+            srcDoc={page}
+            style={{
+              border: 'none',
+              overflow: 'hidden',
+            }}
+            width={frameSize.width}
+            height={frameSize.height}
+          />
+        </SizeFitComponent>
+      </div>
+      <div
+        style={{ position: 'absolute', width: '100%', height: '100%' }}
+      ></div>
     </div>
   );
 };

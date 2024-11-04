@@ -4,6 +4,7 @@ import { useBookLibrary, useLoading } from '../_services';
 import { useEffect, useState } from 'react';
 
 import { BookFrame } from './BookFrame';
+import { Carousel } from './Carousel';
 
 export const BookComponent = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export const BookComponent = () => {
     });
   }, []);
 
-  const toPage = async (pageIndex: number) => {
+  const toPage = (pageIndex: number) => {
     if (pageIndex < 0 || pages.length <= pageIndex) return;
     setCurrentPage(pageIndex);
   };
@@ -63,18 +64,10 @@ export const BookComponent = () => {
     >
       <Carousel
         list={pages}
-        isHide={(item) => currentPage !== item.index}
+        currentIndex={currentPage}
+        onChangeIndex={toPage}
         element={({ item }) => {
           return (
-            // <SizeFitComponent>
-            //   <div
-            //     style={{
-            //       background: item.index % 2 === 0 ? 'red' : 'blue',
-            //       width: 900,
-            //       height: 1600,
-            //     }}
-            //   ></div>
-            // </SizeFitComponent>
             <PageComponent
               key={item.index}
               {...item}
@@ -84,45 +77,5 @@ export const BookComponent = () => {
         }}
       />
     </BookFrame>
-  );
-};
-
-export const Carousel = <T,>({
-  list,
-  element,
-  isHide,
-}: {
-  list: T[];
-  element: React.FC<{ item: T }>;
-  isHide?: (item: T) => boolean;
-}) => {
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        // overflow: 'auto',
-        // position: 'relative',
-        whiteSpace: 'nowrap',
-      }}
-      dir="rtl"
-    >
-      {list.map((item) => {
-        if (isHide !== undefined && isHide(item)) {
-          return <></>;
-        }
-        return (
-          <div
-            style={{
-              display: 'inline-block',
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            {element({ item })}
-          </div>
-        );
-      })}
-    </div>
   );
 };
