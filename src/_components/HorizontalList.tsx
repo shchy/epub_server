@@ -16,8 +16,14 @@ export const HorizontalList = <T,>({
 }) => {
   return (
     <Box display="flex" flexDirection="column" rowGap="1rem" marginTop="1rem">
-      <Box sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-        <Typography variant="h6" component="h6">
+      <Box
+        sx={{
+          bgcolor: 'primary.dark',
+          color: 'primary.contrastText',
+          padding: '0 0.5rem',
+        }}
+      >
+        <Typography variant="h6" component="span">
           {name}
         </Typography>
       </Box>
