@@ -9,7 +9,8 @@ export interface BookSeries {
 export interface Book {
   id: string;
   name: string;
-  faceB64: string;
+  faceB64?: string;
+  thumbnailPath?: string;
   pageCount: number;
   filePath: string;
   isCached?: boolean;

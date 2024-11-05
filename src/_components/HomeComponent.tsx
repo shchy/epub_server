@@ -53,7 +53,7 @@ export const HomeComponent = () => {
             if (!book) return <></>;
             return (
               <img
-                src={`data:image/png;base64,${book.faceB64}`}
+                src={book.thumbnailPath}
                 alt={book.name}
                 width="100%"
                 loading="lazy"
@@ -76,7 +76,7 @@ export const HomeComponent = () => {
           element={({ item }) => {
             return (
               <img
-                src={`data:image/png;base64,${item.faceB64}`}
+                src={item.thumbnailPath}
                 alt={item.name}
                 width="100%"
                 loading="lazy"
@@ -98,7 +98,7 @@ export const HomeComponent = () => {
           element={({ item }) => {
             return (
               <img
-                src={`data:image/png;base64,${item.faceB64}`}
+                src={item.thumbnailPath}
                 alt={item.name}
                 width="100%"
                 loading="lazy"

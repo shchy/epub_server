@@ -4,6 +4,7 @@ import {
   readFileSync,
   writeFileSync,
   existsSync,
+  mkdirSync,
 } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
@@ -11,10 +12,14 @@ import { Book, CreateEpub, CreateEpubController } from './src/_services';
 
 const run = async () => {
   const bookDir = './public/books';
+  const thumbnailDir = './public/thumbnail';
   const indexFilePath = path.join(bookDir, 'index.json');
   const beforeBooks = existsSync(indexFilePath)
     ? (JSON.parse(readFileSync(indexFilePath).toString('utf8')) as Book[])
     : [];
+  if (!existsSync(thumbnailDir)) {
+    mkdirSync(thumbnailDir);
+  }
 
   const epubList = readdirSync(bookDir)
     .map((fspath) => {
@@ -32,9 +37,19 @@ const run = async () => {
   const books: Book[] = beforeBooks.filter((x) =>
     fileNames.includes(x.filePath)
   );
-
   const save = () =>
     writeFileSync(indexFilePath, JSON.stringify(books, undefined, 2));
+
+  // base64なthumbnailが存在したらファイルに吐いてパスにする
+  for (const book of books) {
+    if (!book.faceB64) {
+      continue;
+    }
+    const thumbnailPath = path.join(thumbnailDir, `${book.id}.png`);
+    writeFileSync(thumbnailPath, Buffer.from(book.faceB64, 'base64'));
+    book.faceB64 = undefined;
+    book.thumbnailPath = thumbnailPath.replace('public', '');
+  }
 
   // raspberrypiがすぐ落ちるから一旦セーブ
   save();
@@ -74,12 +89,15 @@ const run = async () => {
             }))
         );
 
+      const thumbnailPath = path.join(thumbnailDir, `${book.id}.png`);
+      writeFileSync(thumbnailPath, book.thumbnail);
+
       books.push({
         id: book.id,
         name: book.name,
         filePath: epubFileName,
         pageCount: book.pageCount,
-        faceB64: book.thumbnail ? book.thumbnail.toString('base64') : '',
+        thumbnailPath: thumbnailPath.replace('public', ''),
         addDate: new Date().getTime(),
       });
 
