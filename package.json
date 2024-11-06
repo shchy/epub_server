@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "vite",
     "indexing": "pnpm exec tsx indexing.ts",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "build": "tsc -b -v && vite build -d",
     "preview": "vite preview",
     "start": "pnpm build && pnpm preview",
+    "lint": "eslint .",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg"
   },
   "dependencies": {

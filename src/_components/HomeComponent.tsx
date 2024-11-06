@@ -1,9 +1,10 @@
 import { Box } from '@mui/material';
 import { BookSeries, OpenRecent, useBookLibrary } from '../_services';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeleteCacheButton } from './DeleteCacheButton';
 import { HorizontalList } from './HorizontalList';
+import { LazyScrollList } from './LazyScrollList';
 
 export const HomeComponent = () => {
   const navigate = useNavigate();
@@ -26,6 +27,14 @@ export const HomeComponent = () => {
           else if (a.addDate === b.addDate) return 0;
           return a.addDate - b.addDate < 0 ? -1 : 1;
         }),
+    [series]
+  );
+
+  const loadNext = useCallback(
+    async (offset: number) => {
+      const xs = series.slice(offset, offset + 4);
+      return xs;
+    },
     [series]
   );
 
@@ -89,25 +98,28 @@ export const HomeComponent = () => {
         />
       )}
 
-      {series.map((s) => (
-        <HorizontalList
-          key={s.id}
-          name={s.name}
-          list={s.books}
-          itemWidth="128px"
-          element={({ item }) => {
-            return (
-              <img
-                src={item.thumbnailPath}
-                alt={item.name}
-                width="100%"
-                loading="lazy"
-                onClick={() => navigate(`/series/${s.id}/book/${item.id}`)}
-              />
-            );
-          }}
-        />
-      ))}
+      <LazyScrollList
+        next={loadNext}
+        renderItem={(s) => (
+          <HorizontalList
+            key={s.id}
+            name={s.name}
+            list={s.books}
+            itemWidth="128px"
+            element={({ item }) => {
+              return (
+                <img
+                  src={item.thumbnailPath}
+                  alt={item.name}
+                  width="100%"
+                  loading="lazy"
+                  onClick={() => navigate(`/series/${s.id}/book/${item.id}`)}
+                />
+              );
+            }}
+          />
+        )}
+      />
 
       <DeleteCacheButton />
     </Box>
