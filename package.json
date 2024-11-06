@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm indexing && tsc -b && vite build",
+    "indexing": "pnpm exec tsx indexing.ts",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "pnpm build && pnpm preview",
-    "indexing": "pnpm exec tsx indexing.ts",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg"
   },
   "dependencies": {
