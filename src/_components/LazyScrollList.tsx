@@ -35,10 +35,7 @@ export const LazyScrollList = <T,>({
   return (
     <div>
       {loadedItems.map(renderItem)}
-      <div
-        ref={targetRef}
-        style={{ height: '10px', width: '100%', background: 'red' }}
-      ></div>
+      <div ref={targetRef} style={{ height: '10px', width: '100%' }}></div>
     </div>
   );
 };
