@@ -1,31 +1,16 @@
 {
-  "name": "epub_msw",
+  "name": "epub",
+  "version": "1.0.0",
+  "description": "",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "indexing": "pnpm exec tsx indexing.ts",
-    "build": "tsc -b -v && vite build -d",
-    "preview": "vite preview",
-    "start": "pnpm build && pnpm preview",
-    "lint": "eslint .",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.6",
-    "@mui/material": "^6.1.6",
-    "buffer": "^6.0.3",
-    "fast-xml-parser": "^4.5.0",
-    "fflate": "^0.8.2",
-    "path-browserify-esm": "^1.0.6",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0",
-    "sharp": "^0.33.5",
-    "tsx": "^4.19.2"
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@9.7.1",
+  "engines": {
+    "pnpm": ">=9.7.1",
+    "npm": "please_use_pnpm_instead",
+    "yarn": "please_use_pnpm_instead"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
@@ -43,5 +28,28 @@
     "typescript-eslint": "^8.11.0",
     "vite": "^5.4.10",
     "vite-plugin-pwa": "^0.20.5"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
+    "buffer": "^6.0.3",
+    "fast-xml-parser": "^4.5.0",
+    "fflate": "^0.8.2",
+    "path-browserify-esm": "^1.0.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0",
+    "sharp": "^0.33.5",
+    "tsx": "^4.19.2"
+  },
+  "scripts": {
+    "clean": "git clean -fdX",
+    "clean:docker": "docker-compose down && docker volume prune -af",
+    "lint": "pnpm exec prettier . --ignore .gitignore --ignore .prettierignore  --write && pnpm exec eslint . --report-unused-disable-directives --fix",
+    "build": "pnpm -F \"@epub/*\" build",
+    "watch": "pnpm -F \"@epub/*\" --parallel watch",
+    "client" :"pnpm -F \"@epub/client\""
   }
 }

@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 // import basicSsl from '@vitejs/plugin-basic-ssl';
-import fs from 'fs';
 
 const pwa = await VitePWA({
   registerType: 'autoUpdate',
@@ -55,9 +54,9 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: 443,
-    https: {
-      cert: fs.readFileSync('./cert/raspberrypi.local.pem'),
-      key: fs.readFileSync('./cert/raspberrypi.local-key.pem'),
-    },
+    // https: {
+    //   cert: fs.readFileSync('./cert/raspberrypi.local.pem'),
+    //   key: fs.readFileSync('./cert/raspberrypi.local-key.pem'),
+    // },
   },
 });
