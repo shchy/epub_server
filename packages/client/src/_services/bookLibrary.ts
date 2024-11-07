@@ -1,5 +1,5 @@
 import { MakeContext } from './contextHelper'
-import { CreateEpub, CreateEpubController } from './epub'
+import { CreateEpub, CreateEpubController } from '@epub/lib/src'
 import { BookSeries, createBookRepository } from './bookRepository'
 import { useState } from 'react'
 
