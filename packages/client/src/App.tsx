@@ -1,13 +1,9 @@
-import { Container } from '@mui/material';
-import { BookLibraryProvider, useLoading } from './_services';
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from 'react-router-dom';
-import { HomeComponent } from './_components/HomeComponent';
-import { BookComponent } from './_components/BookComponent';
-import { LoadingComponent } from './_components/LoadingComponent';
+import { Container } from '@mui/material'
+import { BookLibraryProvider, useLoading } from './_services'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { HomeComponent } from './_components/HomeComponent'
+import { BookComponent } from './_components/BookComponent'
+import { LoadingComponent } from './_components/LoadingComponent'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -19,12 +15,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/*',
-    element: <Navigate to="/" />,
+    element: <Navigate to='/' />,
   },
-]);
+])
 
 function App() {
-  const { isLoading, progress } = useLoading();
+  const { isLoading, progress } = useLoading()
   return (
     <BookLibraryProvider>
       <Container
@@ -38,7 +34,7 @@ function App() {
       </Container>
       <LoadingComponent isLoading={isLoading} progress={progress} />
     </BookLibraryProvider>
-  );
+  )
 }
 
-export default App;
+export default App

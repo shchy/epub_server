@@ -1,10 +1,10 @@
-import { Backdrop, IconButton, Slider, Typography } from '@mui/material';
-import { useState } from 'react';
-import { iOSIsInstalled } from '../_services';
-import CloseIcon from '@mui/icons-material/Close';
+import { Backdrop, IconButton, Slider, Typography } from '@mui/material'
+import { useState } from 'react'
+import { iOSIsInstalled } from '../_services'
+import CloseIcon from '@mui/icons-material/Close'
 
-const SHOW_CONTROL_THRETHOULD = 0.2;
-const NEXT_PREV_THRETHOULD = 0.25;
+const SHOW_CONTROL_THRETHOULD = 0.2
+const NEXT_PREV_THRETHOULD = 0.25
 
 export const BookFrame = ({
   next,
@@ -16,24 +16,24 @@ export const BookFrame = ({
   currentPage,
   children,
 }: React.PropsWithChildren<{
-  title: string;
-  currentPage: number;
-  pageCount: number;
-  next: () => void;
-  prev: () => void;
-  toPage: (pageIndex: number) => void;
-  onClose: () => void;
+  title: string
+  currentPage: number
+  pageCount: number
+  next: () => void
+  prev: () => void
+  toPage: (pageIndex: number) => void
+  onClose: () => void
 }>) => {
-  const [isShowControl, setIsShowControl] = useState(false);
+  const [isShowControl, setIsShowControl] = useState(false)
   const handlePageClick = (xR: number, yR: number) => {
     if (yR <= SHOW_CONTROL_THRETHOULD || 1 - SHOW_CONTROL_THRETHOULD <= yR) {
-      setIsShowControl(true);
+      setIsShowControl(true)
     } else if (xR <= NEXT_PREV_THRETHOULD) {
-      next();
+      next()
     } else if (1 - NEXT_PREV_THRETHOULD <= xR) {
-      prev();
+      prev()
     }
-  };
+  }
 
   return (
     <div
@@ -50,15 +50,15 @@ export const BookFrame = ({
         width: '100%',
       }}
       onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        e.preventDefault()
+        e.stopPropagation()
+        const rect = (e.target as HTMLElement).getBoundingClientRect()
         const p = {
           x: e.nativeEvent.offsetX / rect.width,
           y: e.nativeEvent.offsetY / rect.height,
-        };
+        }
 
-        handlePageClick(p.x, p.y);
+        handlePageClick(p.x, p.y)
       }}
     >
       <div
@@ -84,8 +84,8 @@ export const BookFrame = ({
         onClose={() => onClose()}
       />
     </div>
-  );
-};
+  )
+}
 
 export const BookControl = ({
   isShow,
@@ -96,13 +96,13 @@ export const BookControl = ({
   onPage,
   onClose,
 }: {
-  isShow: boolean;
-  onHide: () => void;
-  title: string;
-  pageCount: number;
-  currentPage: number;
-  onPage: (pageIndex: number) => void;
-  onClose: () => void;
+  isShow: boolean
+  onHide: () => void
+  title: string
+  pageCount: number
+  currentPage: number
+  onPage: (pageIndex: number) => void
+  onClose: () => void
 }) => {
   return (
     <Backdrop
@@ -136,19 +136,19 @@ export const BookControl = ({
           }}
         >
           <Typography
-            variant="caption"
-            component="div"
+            variant='caption'
+            component='div'
             sx={{ color: 'text.primary', gridColumn: '1/4', gridRow: '1/2' }}
           >
             {title}
           </Typography>
           <IconButton
-            aria-label="close"
+            aria-label='close'
             sx={{ gridColumn: '3/4', gridRow: '1/2' }}
             onClick={onClose}
-            size="small"
+            size='small'
           >
-            <CloseIcon fontSize="small" />
+            <CloseIcon fontSize='small' />
           </IconButton>
         </div>
         <div
@@ -157,9 +157,9 @@ export const BookControl = ({
             gridRow: '2/3',
           }}
           onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onHide();
+            e.preventDefault()
+            e.stopPropagation()
+            onHide()
           }}
         ></div>
         <div
@@ -176,16 +176,16 @@ export const BookControl = ({
           }}
         >
           <Typography
-            variant="caption"
-            component="div"
+            variant='caption'
+            component='div'
             sx={{ color: 'text.primary' }}
           >{`${currentPage + 1}/${pageCount}`}</Typography>
 
           <Slider
             sx={{ flex: '1' }}
-            track="inverted"
-            aria-label="Default"
-            valueLabelDisplay="auto"
+            track='inverted'
+            aria-label='Default'
+            valueLabelDisplay='auto'
             valueLabelFormat={(v) => (pageCount - (v as number)).toString()}
             value={pageCount - 1 - currentPage}
             onChange={(_, v) => onPage(pageCount - 1 - (v as number))}
@@ -194,5 +194,5 @@ export const BookControl = ({
         </div>
       </div>
     </Backdrop>
-  );
-};
+  )
+}

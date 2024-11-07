@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 // import basicSsl from '@vitejs/plugin-basic-ssl';
 
 const pwa = await VitePWA({
@@ -43,7 +43,7 @@ const pwa = await VitePWA({
     maximumFileSizeToCacheInBytes: 1024 * 1024 * 1024 * 1,
     navigateFallback: '/index.html',
   },
-});
+})
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -59,4 +59,4 @@ export default defineConfig({
     //   key: fs.readFileSync('./cert/raspberrypi.local-key.pem'),
     // },
   },
-});
+})

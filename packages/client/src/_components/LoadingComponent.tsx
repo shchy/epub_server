@@ -1,11 +1,11 @@
-import { Backdrop, Box, CircularProgress, Typography } from '@mui/material';
+import { Backdrop, Box, CircularProgress, Typography } from '@mui/material'
 
 export const LoadingComponent = ({
   isLoading,
   progress,
 }: {
-  isLoading: boolean;
-  progress?: number;
+  isLoading: boolean
+  progress?: number
 }) => {
   return (
     <Backdrop
@@ -14,7 +14,7 @@ export const LoadingComponent = ({
     >
       <Box sx={{ position: 'relative', display: 'inline-flex' }}>
         <CircularProgress
-          size="5rem"
+          size='5rem'
           variant={progress === undefined ? undefined : 'determinate'}
           value={(progress ?? 0) * 100}
         />
@@ -32,13 +32,13 @@ export const LoadingComponent = ({
         >
           {progress !== undefined && (
             <Typography
-              variant="caption"
-              component="div"
+              variant='caption'
+              component='div'
               sx={{ color: '#fff' }}
             >{`${Math.round((progress ?? 0) * 100)}%`}</Typography>
           )}
         </Box>
       </Box>
     </Backdrop>
-  );
-};
+  )
+}

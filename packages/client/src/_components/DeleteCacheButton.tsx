@@ -5,24 +5,24 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@mui/material';
-import { useState } from 'react';
+} from '@mui/material'
+import { useState } from 'react'
 
 export const DeleteCacheButton = () => {
-  const [isShowConfirmClear, setIsShowConfirmClear] = useState(false);
+  const [isShowConfirmClear, setIsShowConfirmClear] = useState(false)
   const clearCache = async () => {
-    const dbs = await indexedDB.databases();
+    const dbs = await indexedDB.databases()
     for (const db of dbs) {
       if (db.name) {
-        indexedDB.deleteDatabase(db.name);
+        indexedDB.deleteDatabase(db.name)
       }
     }
-  };
+  }
   return (
     <>
       <Button
-        variant="contained"
-        color="error"
+        variant='contained'
+        color='error'
         onClick={() => setIsShowConfirmClear(true)}
       >
         clear cache
@@ -30,14 +30,14 @@ export const DeleteCacheButton = () => {
       <Dialog
         open={isShowConfirmClear}
         onClose={() => setIsShowConfirmClear(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle id='alert-dialog-title'>
           {'ダウンロードデータ削除'}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText id='alert-dialog-description'>
             ダウンロードデータが消えちゃうけどいいですか
           </DialogContentText>
         </DialogContent>
@@ -47,8 +47,8 @@ export const DeleteCacheButton = () => {
           </Button>
           <Button
             onClick={() => {
-              clearCache();
-              setIsShowConfirmClear(false);
+              clearCache()
+              setIsShowConfirmClear(false)
             }}
           >
             よい
@@ -56,5 +56,5 @@ export const DeleteCacheButton = () => {
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react'
 
 export const Carousel = <T,>({
   list,
@@ -9,48 +9,48 @@ export const Carousel = <T,>({
   itemHeight,
   itemWidth,
 }: {
-  list: T[];
-  element: React.FC<{ item: T }>;
-  currentIndex?: number;
-  onChangeIndex?: (index: number) => void;
-  direction?: 'ltr' | 'rtl';
-  itemWidth?: string;
-  itemHeight?: string;
+  list: T[]
+  element: React.FC<{ item: T }>
+  currentIndex?: number
+  onChangeIndex?: (index: number) => void
+  direction?: 'ltr' | 'rtl'
+  itemWidth?: string
+  itemHeight?: string
 }) => {
-  const parentElement = useRef<HTMLDivElement>(null);
-  const [observer, setObserver] = useState<IntersectionObserver>();
+  const parentElement = useRef<HTMLDivElement>(null)
+  const [observer, setObserver] = useState<IntersectionObserver>()
   useEffect(() => {
-    const parent = parentElement.current;
-    if (!parent) return;
+    const parent = parentElement.current
+    if (!parent) return
 
     const callback: IntersectionObserverCallback = (entrys) => {
       for (const entry of entrys) {
         if (entry.isIntersecting && onChangeIndex) {
-          const index = Array.from(parent.children).indexOf(entry.target);
-          onChangeIndex(index);
+          const index = Array.from(parent.children).indexOf(entry.target)
+          onChangeIndex(index)
         }
       }
-    };
+    }
 
     const observer = new IntersectionObserver(callback, {
       root: parent,
       rootMargin: '0px',
       threshold: 1.0,
-    });
+    })
 
-    setObserver(observer);
-    return () => observer.disconnect();
-  }, [onChangeIndex]);
+    setObserver(observer)
+    return () => observer.disconnect()
+  }, [onChangeIndex])
 
   useEffect(() => {
-    if (!currentIndex) return;
-    const parent = parentElement.current;
-    if (!parent) return;
-    const target = Array.from(parent.children)[currentIndex];
-    if (!target) return;
+    if (!currentIndex) return
+    const parent = parentElement.current
+    if (!parent) return
+    const target = Array.from(parent.children)[currentIndex]
+    if (!target) return
 
-    target.scrollIntoView();
-  }, [currentIndex]);
+    target.scrollIntoView()
+  }, [currentIndex])
 
   return (
     <div
@@ -75,11 +75,11 @@ export const Carousel = <T,>({
           >
             {element({ item })}
           </CarouselItem>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
 export const CarouselItem = ({
   itemHeight,
@@ -87,16 +87,16 @@ export const CarouselItem = ({
   observer,
   children,
 }: React.PropsWithChildren<{
-  itemWidth?: string;
-  itemHeight?: string;
-  observer?: IntersectionObserver;
+  itemWidth?: string
+  itemHeight?: string
+  observer?: IntersectionObserver
 }>) => {
-  const targetElement = useRef<HTMLDivElement>(null);
+  const targetElement = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!targetElement.current) return;
-    if (!observer) return;
-    observer.observe(targetElement.current);
-  }, [observer, targetElement]);
+    if (!targetElement.current) return
+    if (!observer) return
+    observer.observe(targetElement.current)
+  }, [observer, targetElement])
 
   return (
     <div
@@ -110,5 +110,5 @@ export const CarouselItem = ({
     >
       {children}
     </div>
-  );
-};
+  )
+}
