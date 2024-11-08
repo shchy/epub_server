@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/express": "^5.0.0",
     "@types/node": "^22.8.7",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -37,6 +38,7 @@
     "@mui/icons-material": "^6.1.6",
     "@mui/material": "^6.1.6",
     "buffer": "^6.0.3",
+    "express": "^4.21.1",
     "fast-xml-parser": "^4.5.0",
     "fflate": "^0.8.2",
     "path-browserify-esm": "^1.0.6",
@@ -52,6 +54,7 @@
     "lint": "pnpm exec prettier . --ignore .gitignore --ignore .prettierignore  --write && pnpm exec eslint . --report-unused-disable-directives --fix",
     "build": "pnpm -F \"@epub/*\" build",
     "watch": "pnpm -F \"@epub/*\" --parallel watch",
-    "client": "pnpm -F \"@epub/client\""
+    "client": "pnpm -F \"@epub/client\"",
+    "serve": "pnpm -F \"@epub/server\" dev"
   }
 }
