@@ -13,6 +13,7 @@ const CreateLoading = () => {
       await f(setProgress)
     } finally {
       setIsLoading(false)
+      setProgress(undefined)
     }
   }
 

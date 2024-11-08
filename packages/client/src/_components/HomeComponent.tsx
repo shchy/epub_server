@@ -46,7 +46,9 @@ export const HomeComponent = () => {
 
   useEffect(() => {
     ;(async () => {
-      setRecents(await listRecents())
+      setRecents(
+        (await listRecents()).sort((a, b) => (a.date < b.date ? 1 : -1)),
+      )
     })()
   }, [listRecents])
 
@@ -77,26 +79,24 @@ export const HomeComponent = () => {
         />
       )}
 
-      {recents.length > 0 && (
-        <HorizontalList
-          name='追加された本'
-          list={books.slice(0, 30)}
-          itemWidth='128px'
-          element={({ item }) => {
-            return (
-              <img
-                src={item.thumbnailPath}
-                alt={item.name}
-                width='100%'
-                loading='lazy'
-                onClick={() =>
-                  navigate(`/series/${item.series.id}/book/${item.id}`)
-                }
-              />
-            )
-          }}
-        />
-      )}
+      <HorizontalList
+        name='追加された本'
+        list={[...books].reverse().slice(0, 30)}
+        itemWidth='128px'
+        element={({ item }) => {
+          return (
+            <img
+              src={item.thumbnailPath}
+              alt={item.name}
+              width='100%'
+              loading='lazy'
+              onClick={() =>
+                navigate(`/series/${item.series.id}/book/${item.id}`)
+              }
+            />
+          )
+        }}
+      />
 
       <LazyScrollList
         next={loadNext}
