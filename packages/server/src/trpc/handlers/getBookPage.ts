@@ -5,35 +5,31 @@ import fs from 'fs'
 import { CreateEpub, CreateEpubController } from '../../epub'
 import path from 'path'
 
-export const getBookPage = ({
-  bookCache,
-  epubFileDir,
-  indexFilePath,
-}: BookAPIParams) => {
-  const loadEpub = (bookId: string) => {
-    const cache = bookCache.get(bookId)
-    if (cache) {
-      return cache.epub
-    }
-
-    const books = loadIndexFile(indexFilePath)
-    const book = books.find((x) => x.id === bookId)
-    if (!book) {
-      return
-    }
-
-    const epubFile = fs.readFileSync(path.join(epubFileDir, book.filePath))
-    const epub = CreateEpub(epubFile)
-    const ctrl = CreateEpubController(epub)
-    bookCache.set(ctrl)
-    return ctrl
+const loadEpub = (bookId: string, prms: BookAPIParams) => {
+  const cache = prms.bookCache.get(bookId)
+  if (cache) {
+    return cache.epub
   }
 
+  const books = loadIndexFile(prms.indexFilePath)
+  const book = books.find((x) => x.id === bookId)
+  if (!book) {
+    return
+  }
+
+  const epubFile = fs.readFileSync(path.join(prms.epubFileDir, book.filePath))
+  const epub = CreateEpub(epubFile)
+  const ctrl = CreateEpubController(epub)
+  prms.bookCache.set(ctrl)
+  return ctrl
+}
+
+export const getBookPage = (prms: BookAPIParams) => {
   return procedure
     .input(z.object({ bookId: z.string(), pageIndex: z.number() }))
     .query(async ({ input }) => {
       // キャッシュにあればそれ使う
-      const ctrl = loadEpub(input.bookId)
+      const ctrl = loadEpub(input.bookId, prms)
       if (!ctrl) {
         return undefined
       }

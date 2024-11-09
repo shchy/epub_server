@@ -16,6 +16,7 @@ RUN pnpm i
 COPY ./ /build
 RUN mkdir /build/dist
 
+RUN pnpm i 
 RUN pnpm --filter @epub/server build 
 RUN pnpm --filter @epub/client build 
 RUN pnpm --filter @epub/server deploy --prod /build/dist/server 
