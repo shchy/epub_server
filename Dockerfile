@@ -4,14 +4,14 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable pnpm
 
-
 WORKDIR /build
-ADD ./ /build
+COPY ./ /build
 RUN mkdir /build/dist
-RUN COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm i
-RUN pnpm  build
-RUN pnpm --filter @epub/server deploy --prod /build/dist/server
-RUN mv /build/packages/client/dist /build/dist/client
+RUN COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm i \
+  && pnpm build \
+  && pnpm --filter @epub/server deploy --prod /build/dist/server \
+  && mv /build/packages/client/dist /build/dist/client
+
 
 FROM node:lts-alpine3.20 AS runtime
 ENV publicDir=/serve/public
@@ -31,9 +31,9 @@ CMD ["node","bin"]
 # docker build . -t epub
 # docker run \
 #   -p 443:443 \
-#   -v $(pwd)/mount/books:/serve/public/ \
-#   -v $(pwd)/mount/thumbnail:/serve/public/ \
-#   -v $(pwd)/mount/cert:/serve/ \
+#   -v $(pwd)/mount/books:/serve/public/books \
+#   -v $(pwd)/mount/thumbnail:/serve/public/thumbnail \
+#   -v $(pwd)/mount/cert:/serve/cert \
 #   epub
 
 
