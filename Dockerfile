@@ -8,9 +8,12 @@ RUN pnpm -h
 RUN corepack install -g pnpm@latest
 
 WORKDIR /build
+COPY ./package.json /build/package.json
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i 
+
 COPY ./ /build
 RUN mkdir /build/dist
-RUN pnpm i 
+
 RUN pnpm build 
 RUN pnpm --filter @epub/server deploy --prod /build/dist/server 
 RUN mv /build/packages/client/dist /build/dist/client
