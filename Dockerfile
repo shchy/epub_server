@@ -2,15 +2,17 @@ FROM node:lts-alpine3.20 AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable pnpm
+RUN pnpm -h
 
 WORKDIR /build
 COPY ./ /build
 RUN mkdir /build/dist
-RUN COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm i \
-  && pnpm build \
-  && pnpm --filter @epub/server deploy --prod /build/dist/server \
-  && mv /build/packages/client/dist /build/dist/client
+RUN pnpm i 
+RUN pnpm build 
+RUN pnpm --filter @epub/server deploy --prod /build/dist/server 
+RUN mv /build/packages/client/dist /build/dist/client
 
 
 FROM node:lts-alpine3.20 AS runtime
@@ -31,9 +33,9 @@ CMD ["node","bin"]
 # docker build . -t epub
 # docker run \
 #   -p 443:443 \
-#   -v $(pwd)/mount/books:/serve/public/books \
-#   -v $(pwd)/mount/thumbnail:/serve/public/thumbnail \
-#   -v $(pwd)/mount/cert:/serve/cert \
+#   -v $(pwd)/books:/serve/public/books \
+#   -v $(pwd)/thumbnail:/serve/public/thumbnail \
+#   -v $(pwd)/cert:/serve/cert \
 #   epub
 
 
@@ -43,5 +45,5 @@ CMD ["node","bin"]
 #   -v $(pwd)/mount/thumbnail:/serve/public/thumbnail \
 #   -v $(pwd)/mount/cert/cert.pem:/serve/cert/cert.pem \
 #   -v $(pwd)/mount/cert/key.pem:/serve/cert/key.pem \
-#   -it test ash
+#   -it epub ash
 
