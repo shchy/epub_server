@@ -8,7 +8,7 @@ RUN pnpm -h
 RUN corepack install -g pnpm@latest
 
 WORKDIR /build
-COPY ./package.json /build/package.json
+COPY ./package.json ./pnpm-lock.yaml /build/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i 
 
 COPY ./ /build
