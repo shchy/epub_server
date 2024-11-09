@@ -31,10 +31,7 @@ export const getBookPage = ({
 
   return procedure
     .input(z.object({ bookId: z.string(), pageIndex: z.number() }))
-    .query(async ({ input, ctx }) => {
-      console.log('input', input)
-      console.log('ctx', ctx)
-
+    .query(async ({ input }) => {
       // キャッシュにあればそれ使う
       const ctrl = loadEpub(input.bookId)
       if (!ctrl) {
