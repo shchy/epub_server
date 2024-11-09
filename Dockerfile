@@ -14,7 +14,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i
 COPY ./ /build
 RUN mkdir /build/dist
 
-RUN pnpm build 
+RUN pnpm --filter @epub/server build 
+RUN pnpm --filter @epub/client build 
 RUN pnpm --filter @epub/server deploy --prod /build/dist/server 
 RUN mv /build/packages/client/dist /build/dist/client
 
