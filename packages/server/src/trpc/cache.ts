@@ -1,16 +1,16 @@
-import { Epub } from '../epub'
+import { EpubController } from '../epub'
 
 const cacheSize = 5
 interface BookCacheItem {
-  epub: Epub
+  epub: EpubController
   lastAt: Date
 }
 export const createCache = () => {
   const cache: BookCacheItem[] = []
 
-  const set = (epub: Epub) => {
+  const set = (epub: EpubController) => {
     const findOne = cache.find(
-      (x) => x.epub.metaData.identifier === epub.metaData.identifier,
+      (x) => x.epub.epub.metaData.identifier === epub.epub.metaData.identifier,
     )
     if (findOne) {
       findOne.lastAt = new Date()
@@ -30,7 +30,9 @@ export const createCache = () => {
   }
 
   const get = (bookId: string) => {
-    const findOne = cache.find((x) => x.epub.metaData.identifier === bookId)
+    const findOne = cache.find(
+      (x) => x.epub.epub.metaData.identifier === bookId,
+    )
     if (!findOne) {
       return
     }

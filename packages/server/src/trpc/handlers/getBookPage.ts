@@ -13,7 +13,7 @@ export const getBookPage = ({
   const loadEpub = (bookId: string) => {
     const cache = bookCache.get(bookId)
     if (cache) {
-      return CreateEpubController(cache.epub)
+      return cache.epub
     }
 
     const books = loadIndexFile(indexFilePath)
@@ -24,8 +24,8 @@ export const getBookPage = ({
 
     const epubFile = fs.readFileSync(path.join(epubFileDir, book.filePath))
     const epub = CreateEpub(epubFile)
-    bookCache.set(epub)
     const ctrl = CreateEpubController(epub)
+    bookCache.set(ctrl)
     return ctrl
   }
 
