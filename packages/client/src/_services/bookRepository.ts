@@ -1,19 +1,10 @@
+import { Book } from '@epub/server/src/trpc'
 import { createDB } from './store'
 
 export interface BookSeries {
   id: string
   name: string
   books: Book[]
-}
-
-export interface Book {
-  id: string
-  name: string
-  thumbnailPath?: string
-  pageCount: number
-  filePath: string
-  isCached?: boolean
-  addDate?: number
 }
 
 // 本のページ情報

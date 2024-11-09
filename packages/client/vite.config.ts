@@ -50,6 +50,16 @@ export default defineConfig({
   plugins: [react(), pwa],
   server: {
     host: '0.0.0.0',
+    proxy: {
+      '/trpc': 'http://localhost:3000',
+      '/thumbnail': 'http://localhost:3000',
+    },
+    // cors: {
+    //   origin: '*',
+    //   // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    //   // preflightContinue: false,
+    //   // optionsSuccessStatus: 204,
+    // },
   },
   preview: {
     host: '0.0.0.0',

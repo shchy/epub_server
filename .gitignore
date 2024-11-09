@@ -57,3 +57,4 @@ __fixtures__/custom-modules-dir/patches/
 ##
 ._.DS_Store
 cert
+mount

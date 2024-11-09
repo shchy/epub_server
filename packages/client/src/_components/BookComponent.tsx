@@ -11,16 +11,16 @@ export const BookComponent = () => {
   const { bookId } = useParams()
   const [searchParams] = useSearchParams()
   const { loading } = useLoading()
-  const { epubDownload, getBook, saveRecent } = useBookLibrary()
+  const { getBook, saveRecent } = useBookLibrary()
   const [pages, setPages] = useState<Omit<PageProp, 'currentPage'>[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [title, setTitle] = useState('')
 
   useEffect(() => {
-    loading(async (setProgress) => {
+    loading(async () => {
       if (!bookId) return
-      // ダウンロード
-      await epubDownload(bookId, setProgress)
+      // // ダウンロード
+      // await epubDownload(bookId, setProgress)
 
       const book = await getBook(bookId)
       if (!book) {

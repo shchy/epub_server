@@ -14,7 +14,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/jsdom": "^21.1.7",
     "@types/node": "^22.8.7",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -37,17 +39,22 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.6",
     "@mui/material": "^6.1.6",
+    "@trpc/client": "11.0.0-rc.608",
+    "@trpc/server": "11.0.0-rc.608",
     "buffer": "^6.0.3",
+    "cors": "^2.8.5",
     "csstype": "^3.1.3",
     "express": "^4.21.1",
     "fast-xml-parser": "^4.5.0",
     "fflate": "^0.8.2",
+    "jsdom": "^25.0.1",
     "path-browserify-esm": "^1.0.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "sharp": "^0.33.5",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "zod": "^3.23.8"
   },
   "scripts": {
     "clean": "git clean -fdX",

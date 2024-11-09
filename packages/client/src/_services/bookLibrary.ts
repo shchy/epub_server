@@ -1,7 +1,8 @@
 import { MakeContext } from './contextHelper'
-import { CreateEpub, CreateEpubController } from '@epub/lib/src'
+// import { CreateEpub, CreateEpubController } from '@epub/lib/src'
 import { BookSeries, createBookRepository } from './bookRepository'
 import { useState } from 'react'
+import { trpc } from './trpc'
 
 export const CreateBookLibrary = () => {
   const [seriesList, setSeriesList] = useState<BookSeries[]>([])
@@ -12,8 +13,7 @@ export const CreateBookLibrary = () => {
       return seriesList
     }
 
-    const res = await fetch(`/books/index.json`)
-    const bookIndex = await res.json()
+    const bookIndex = await trpc.book.query()
 
     const xs = await repo.getSeries()
     const books = xs.flatMap((x) => x.books)
@@ -38,40 +38,47 @@ export const CreateBookLibrary = () => {
   }
 
   const getBookPage = async (bookId: string, pageIndex: number) => {
-    return await repo.getPage(bookId, pageIndex)
-  }
-
-  const epubDownload = async (
-    bookId: string,
-    setProgress: (v: number) => void,
-  ) => {
-    try {
-      const book = await repo.getBook(bookId)
-      if (!book) return
-      if (book.isCached) {
-        return
+    let page = await repo.getPage(bookId, pageIndex)
+    if (!page) {
+      page = await trpc.getBookPage.query({ bookId, pageIndex })
+      if (page) {
+        repo.putPage(bookId, pageIndex, page)
       }
-
-      const response = await fetch(`/books/${book.filePath}`)
-      const data = await response.arrayBuffer()
-      const epub = CreateEpub(new Uint8Array(data))
-      const ctrl = CreateEpubController(epub)
-      const count = epub.spine.length
-      for (const index of [...Array(count).keys()]) {
-        const progress = (index + 1) / count
-        setProgress(progress)
-        const item = await repo.getPage(bookId, index)
-        if (!item) {
-          const html = await ctrl.getPage(index)
-          if (!html) continue
-          await repo.putPage(bookId, index, html)
-        }
-      }
-      await repo.setCached(bookId)
-    } catch (err) {
-      console.error('epubDownload error', err)
     }
+    return page
   }
+
+  // const epubDownload = async (
+  //   bookId: string,
+  //   setProgress: (v: number) => void,
+  // ) => {
+  //   try {
+  //     const book = await repo.getBook(bookId)
+  //     if (!book) return
+  //     if (book.isCached) {
+  //       return
+  //     }
+
+  //     const response = await fetch(`/books/${book.filePath}`)
+  //     const data = await response.arrayBuffer()
+  //     const epub = CreateEpub(new Uint8Array(data))
+  //     const ctrl = CreateEpubController(epub)
+  //     const count = epub.spine.length
+  //     for (const index of [...Array(count).keys()]) {
+  //       const progress = (index + 1) / count
+  //       setProgress(progress)
+  //       const item = await repo.getPage(bookId, index)
+  //       if (!item) {
+  //         const html = await ctrl.getPage(index)
+  //         if (!html) continue
+  //         await repo.putPage(bookId, index, html)
+  //       }
+  //     }
+  //     await repo.setCached(bookId)
+  //   } catch (err) {
+  //     console.error('epubDownload error', err)
+  //   }
+  // }
 
   const saveRecent = repo.saveRecent
 
@@ -81,7 +88,7 @@ export const CreateBookLibrary = () => {
     getSeries,
     getBook,
     getBookPage,
-    epubDownload,
+    // epubDownload,
     saveRecent,
     listRecents,
   }
