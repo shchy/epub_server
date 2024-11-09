@@ -53,11 +53,11 @@ export default defineConfig({
     proxy: {
       '/trpc': {
         secure: false,
-        target: 'https://localhost:3000',
+        target: 'http://localhost:3000',
       },
       '/thumbnail': {
         secure: false,
-        target: 'https://localhost:3000',
+        target: 'http://localhost:3000',
       },
     },
     // cors: {

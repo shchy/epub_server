@@ -29,24 +29,19 @@ app.use(
     }),
 )
 
-const options = {
-  key: fs.readFileSync(process.env.keyfile as string),
-  cert: fs.readFileSync(process.env.certfile as string),
-}
-const server = https.createServer(options, app)
+const isHttps = process.env.keyfile && process.env.certfile
 const port = process.env.listenport ? parseInt(process.env.listenport) : 443
-server.listen(port, () => {
-  console.log(`listening to ${port}`)
-})
-// const server = app.listen(port, function () {
-//   const address = server.address()
-//   if (!address) return
 
-//   let url = ''
-//   if (typeof address === 'string') {
-//     url = address
-//   } else {
-//     url = `${address.family} ${address.address}:${address.port}`
-//   }
-//   console.log(`Node.js is listening to ${url}`)
-// })
+if (isHttps) {
+  const options = {
+    key: fs.readFileSync(process.env.keyfile as string),
+    cert: fs.readFileSync(process.env.certfile as string),
+  }
+  https.createServer(options, app).listen(port, () => {
+    console.log(`https listening to ${port}`)
+  })
+} else {
+  app.listen(port, function () {
+    console.log(`http listening to ${port}`)
+  })
+}

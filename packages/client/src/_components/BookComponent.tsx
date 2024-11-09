@@ -41,11 +41,16 @@ export const BookComponent = () => {
 
   const toPage = useCallback(
     (pageIndex: number) => {
-      if (pageIndex < 0 || pages.length <= pageIndex) return
+      if (pageIndex < 0) {
+        pageIndex = 0
+      } else if (pages.length <= pageIndex) {
+        pageIndex = pages.length - 1
+      }
+      if (pageIndex === currentPage) return
       setCurrentPage(pageIndex)
       if (bookId) saveRecent(bookId, pageIndex)
     },
-    [bookId, setCurrentPage, pages, saveRecent],
+    [bookId, currentPage, setCurrentPage, pages, saveRecent],
   )
 
   const next = async () => {
