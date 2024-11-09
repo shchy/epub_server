@@ -5,6 +5,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable pnpm
 RUN pnpm -h
+RUN corepack install -g pnpm@latest
 
 WORKDIR /build
 COPY ./ /build

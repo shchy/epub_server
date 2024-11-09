@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { SizeFitComponent } from './SizeFitComponent'
 import { useBookLibrary } from '../_services'
 
-const PRE_LOAD_SIZE = 3
+const PRE_LOAD_SIZE = 5
 
 export interface PageProp {
   bookId: string
