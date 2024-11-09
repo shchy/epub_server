@@ -2,7 +2,7 @@ import { BookAPIParams, procedure } from '../router'
 import { loadIndexFile } from './getBooks'
 import { z } from 'zod'
 import fs from 'fs'
-import { CreateEpub, CreateEpubController } from '@epub/lib'
+import { CreateEpub, CreateEpubController } from '../../epub'
 import path from 'path'
 
 export const getBookPage = ({

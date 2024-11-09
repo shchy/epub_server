@@ -12,8 +12,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@epub/lib": "workspace:*"
-  }
+  "license": "ISC"
 }

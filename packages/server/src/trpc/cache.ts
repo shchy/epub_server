@@ -1,4 +1,4 @@
-import { Epub } from '@epub/lib'
+import { Epub } from '../epub'
 
 const cacheSize = 5
 interface BookCacheItem {

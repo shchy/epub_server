@@ -1,7 +1,7 @@
 import * as fflate from 'fflate'
 import { XMLParser } from 'fast-xml-parser'
-// import path from 'path-browserify-esm'
 import { JSDOM } from 'jsdom'
+// import path from 'path-browserify-esm'
 import path from 'path'
 
 export interface EpubMetaValue {
