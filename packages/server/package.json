@@ -12,5 +12,18 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@trpc/server": "11.0.0-rc.608",
+    "buffer": "^6.0.3",
+    "cors": "^2.8.5",
+    "https": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "fast-xml-parser": "^4.5.0",
+    "fflate": "^0.8.2",
+    "jsdom": "^25.0.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  }
 }

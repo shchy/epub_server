@@ -1,14 +1,14 @@
 import { MakeContext } from './contextHelper'
 import { BookSeries, createBookRepository } from './bookRepository'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { trpc } from './trpc'
 
 export const CreateBookLibrary = () => {
-  const [seriesList, setSeriesList] = useState<BookSeries[]>([])
-  const repo = createBookRepository()
+  const [seriesList, setSeriesList] = useState<BookSeries[]>()
+  const repo = useMemo(() => createBookRepository(), [])
 
-  const getSeries = async () => {
-    if (seriesList.length !== 0) {
+  const getSeries = useCallback(async () => {
+    if (seriesList !== undefined) {
       return seriesList
     }
 
@@ -28,7 +28,7 @@ export const CreateBookLibrary = () => {
     const newList = await repo.getSeries()
     setSeriesList(newList)
     return newList
-  }
+  }, [repo, seriesList])
 
   const getBook = async (id: string) => {
     const book = await repo.getBook(id)

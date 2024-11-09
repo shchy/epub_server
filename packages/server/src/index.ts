@@ -1,9 +1,11 @@
 import path from 'path'
 import express from 'express'
 import cors from 'cors'
+import https from 'https'
 import dotenv from 'dotenv'
 import { createTrpcRouter } from './trpc'
 import { createCache } from './trpc/cache'
+import fs from 'fs'
 
 dotenv.config()
 
@@ -27,16 +29,24 @@ app.use(
     }),
 )
 
-/* 3000番ポートで待ち受け */
-const server = app.listen(3000, function () {
-  const address = server.address()
-  if (!address) return
-
-  let url = ''
-  if (typeof address === 'string') {
-    url = address
-  } else {
-    url = `${address.family} ${address.address}:${address.port}`
-  }
-  console.log(`Node.js is listening to ${url}`)
+const options = {
+  key: fs.readFileSync(process.env.keyfile as string),
+  cert: fs.readFileSync(process.env.certfile as string),
+}
+const server = https.createServer(options, app)
+const port = process.env.listenport ? parseInt(process.env.listenport) : 443
+server.listen(port, () => {
+  console.log(`listening to ${port}`)
 })
+// const server = app.listen(port, function () {
+//   const address = server.address()
+//   if (!address) return
+
+//   let url = ''
+//   if (typeof address === 'string') {
+//     url = address
+//   } else {
+//     url = `${address.family} ${address.address}:${address.port}`
+//   }
+//   console.log(`Node.js is listening to ${url}`)
+// })

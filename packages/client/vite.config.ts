@@ -51,8 +51,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     proxy: {
-      '/trpc': 'http://localhost:3000',
-      '/thumbnail': 'http://localhost:3000',
+      '/trpc': {
+        secure: false,
+        target: 'https://localhost:3000',
+      },
+      '/thumbnail': {
+        secure: false,
+        target: 'https://localhost:3000',
+      },
     },
     // cors: {
     //   origin: '*',

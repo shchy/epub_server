@@ -1,0 +1,6 @@
+./.git
+./.vscode
+./mount
+node_modules
+Dockerfile
+./packages/server/.env
