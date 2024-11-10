@@ -11,23 +11,27 @@ export const CreateBookLibrary = () => {
     if (seriesList !== undefined) {
       return seriesList
     }
-
-    const bookIndex = await trpc.book.query()
-
     const xs = await repo.getSeries()
-    const books = xs.flatMap((x) => x.books)
-    for (const book of bookIndex) {
-      const exists = books.some((x) => x.id === book.id)
-      if (exists) continue
-      await repo.putBook({
-        ...book,
-        addDate: book.addDate ?? new Date().getTime(),
-      })
-    }
 
-    const newList = await repo.getSeries()
-    setSeriesList(newList)
-    return newList
+    try {
+      const bookIndex = await trpc.book.query()
+      const books = xs.flatMap((x) => x.books)
+      for (const book of bookIndex) {
+        const exists = books.some((x) => x.id === book.id)
+        if (exists) continue
+        await repo.putBook({
+          ...book,
+          addDate: book.addDate ?? new Date().getTime(),
+        })
+      }
+
+      const newList = await repo.getSeries()
+      setSeriesList(newList)
+      return newList
+    } catch {
+      setSeriesList(xs)
+      return xs
+    }
   }, [repo, seriesList])
 
   const getBook = async (id: string) => {
