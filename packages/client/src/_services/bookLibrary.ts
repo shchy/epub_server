@@ -47,37 +47,53 @@ export const CreateBookLibrary = () => {
     return page
   }
 
-  // const epubDownload = async (
-  //   bookId: string,
-  //   setProgress: (v: number) => void,
-  // ) => {
-  //   try {
-  //     const book = await repo.getBook(bookId)
-  //     if (!book) return
-  //     if (book.isCached) {
-  //       return
-  //     }
+  const epubDownload = async (
+    bookId: string,
+    setProgress: (v: number) => void,
+  ) => {
+    try {
+      const book = await repo.getBook(bookId)
+      if (!book) return
+      if (book.isCached) {
+        return
+      }
 
-  //     const response = await fetch(`/books/${book.filePath}`)
-  //     const data = await response.arrayBuffer()
-  //     const epub = CreateEpub(new Uint8Array(data))
-  //     const ctrl = CreateEpubController(epub)
-  //     const count = epub.spine.length
-  //     for (const index of [...Array(count).keys()]) {
-  //       const progress = (index + 1) / count
-  //       setProgress(progress)
-  //       const item = await repo.getPage(bookId, index)
-  //       if (!item) {
-  //         const html = await ctrl.getPage(index)
-  //         if (!html) continue
-  //         await repo.putPage(bookId, index, html)
-  //       }
-  //     }
-  //     await repo.setCached(bookId)
-  //   } catch (err) {
-  //     console.error('epubDownload error', err)
-  //   }
-  // }
+      for (let pageIndex = 0; pageIndex < book.pageCount; pageIndex++) {
+        const progress = (pageIndex + 1) / book.pageCount
+        setProgress(progress)
+
+        const item = await repo.getPage(bookId, pageIndex)
+        if (!item) {
+          const html = await trpc.getBookPage.query({
+            bookId: book.id,
+            pageIndex: pageIndex,
+          })
+          if (!html) continue
+          await repo.putPage(bookId, pageIndex, html)
+        }
+      }
+      await repo.setCached(bookId)
+
+      // const response = await fetch(`/books/${book.filePath}`)
+      // const data = await response.arrayBuffer()
+      // const epub = CreateEpub(new Uint8Array(data))
+      // const ctrl = CreateEpubController(epub)
+      // const count = epub.spine.length
+      // for (const index of [...Array(count).keys()]) {
+      //   const progress = (index + 1) / count
+      //   setProgress(progress)
+      //   const item = await repo.getPage(bookId, index)
+      //   if (!item) {
+      //     const html = await ctrl.getPage(index)
+      //     if (!html) continue
+      //     await repo.putPage(bookId, index, html)
+      //   }
+      // }
+      // await repo.setCached(bookId)
+    } catch (err) {
+      console.error('epubDownload error', err)
+    }
+  }
 
   const saveRecent = repo.saveRecent
 
@@ -87,7 +103,7 @@ export const CreateBookLibrary = () => {
     getSeries,
     getBook,
     getBookPage,
-    // epubDownload,
+    epubDownload,
     saveRecent,
     listRecents,
   }

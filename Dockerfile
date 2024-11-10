@@ -3,25 +3,22 @@ FROM node:lts-alpine3.20 AS builder
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-RUN corepack enable pnpm
-RUN pnpm -h
-RUN corepack install -g pnpm@latest
+RUN corepack enable pnpm \
+  && corepack install -g pnpm@latest
 
 
 WORKDIR /build
 COPY ./package.json ./pnpm-lock.yaml /build/
-RUN pnpm i 
-# --mount=type=cache,id=pnpm,target=/pnpm/store
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i 
+# # --mount=type=cache,id=pnpm,target=/pnpm/store
 
 COPY ./ /build
 RUN mkdir /build/dist
 
-RUN pnpm i 
-RUN pnpm --filter @epub/server build 
-RUN pnpm --filter @epub/client build 
+RUN pnpm i
+RUN pnpm build 
 RUN pnpm --filter @epub/server deploy --prod /build/dist/server 
 RUN mv /build/packages/client/dist /build/dist/client
-
 
 FROM node:lts-alpine3.20 AS runtime
 ENV publicDir=/serve/public
@@ -38,7 +35,10 @@ COPY --from=builder /build/dist/server/node_modules /serve/node_modules
 COPY --from=builder /build/dist/client /serve/public
 CMD ["node","bin"]
 
-# docker build . -t epub
+# docker build . -t epub --platform linux/arm/v7
+# docker save epub > epub.tar
+# docker load < epub.tar
+
 # docker run \
 #   -p 443:443 \
 #   -v $(pwd)/books:/serve/public/books \
