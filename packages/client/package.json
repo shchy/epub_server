@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b -v && vite build -d",
+    "build": "tsc -b -v && vite build",
     "preview": "vite preview",
     "start": "pnpm build && pnpm preview",
     "lint": "eslint .",
@@ -24,7 +24,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "sharp": "^0.33.5",
-    "@epub/server": "workspace:*"
+    "@epub/server": "workspace:*",
+    "@epub/lib": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

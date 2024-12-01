@@ -9,15 +9,13 @@ import {
 import path from 'path'
 import sharp from 'sharp'
 import { JSDOM } from 'jsdom'
-import {
-  CreateEpub,
-  CreateEpubController,
-} from './packages/client/src/_services'
-import { Book } from './packages/server/src/trpc'
+import { Book, CreateEpub, CreateEpubController } from './packages/lib'
 
 const run = async () => {
-  const bookDir = './public/books'
-  const thumbnailDir = './public/thumbnail'
+  const staticRoot = './public'
+  const bookDir = path.join(staticRoot, 'books')
+  const thumbnailDir = path.join(staticRoot, 'thumbnail')
+
   const indexFilePath = path.join(bookDir, 'index.json')
   const beforeBooks =
     existsSync(indexFilePath) ?
@@ -58,7 +56,6 @@ const run = async () => {
         continue
       }
 
-      console.log('epubFilepath', epubFilepath)
       const book = await new Promise<Buffer>((resolve) =>
         resolve(readFileSync(epubFilepath)),
       )

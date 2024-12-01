@@ -1,4 +1,4 @@
-import { Book } from '@epub/server/src/trpc'
+import { Book } from '@epub/lib'
 import { createDB } from './store'
 
 export interface BookSeries {

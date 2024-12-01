@@ -2,7 +2,7 @@ import { MakeContext } from './contextHelper'
 import { BookSeries, createBookRepository } from './bookRepository'
 import { useCallback, useMemo, useState } from 'react'
 import { trpc } from './trpc'
-import { CreateEpub, CreateEpubController } from './epub'
+import { CreateEpub, CreateEpubController } from '@epub/lib'
 import path from 'path-browserify-esm'
 
 export const CreateBookLibrary = () => {

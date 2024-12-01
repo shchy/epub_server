@@ -1,5 +1,5 @@
 import { BookAPIParams, procedure } from '../router'
-import { Book } from '../types'
+import { Book } from '@epub/lib'
 import { z } from 'zod'
 import fs from 'fs'
 

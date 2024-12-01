@@ -47,6 +47,14 @@ const pwa = await VitePWA({
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), pwa],
+  optimizeDeps: {
+    include: ['@epub/lib'],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/lib/, /node_modules/],
+    },
+  },
   server: {
     host: '0.0.0.0',
     proxy: {

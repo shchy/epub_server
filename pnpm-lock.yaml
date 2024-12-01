@@ -141,6 +141,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.13.0
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.12)(react@18.3.1))(@types/react@18.3.12)(react@18.3.1)
+      '@epub/lib':
+        specifier: workspace:*
+        version: link:../lib
       '@epub/server':
         specifier: workspace:*
         version: link:../server
@@ -159,6 +162,9 @@ importers:
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
+      path-browserify-esm:
+        specifier: ^1.0.6
+        version: 1.0.6
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -215,8 +221,23 @@ importers:
         specifier: ^0.20.5
         version: 0.20.5(@vite-pwa/assets-generator@0.2.6)(vite@5.4.10(@types/node@22.9.0)(terser@5.36.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
 
+  packages/lib:
+    dependencies:
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
+      fast-xml-parser:
+        specifier: ^4.5.0
+        version: 4.5.0
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
+
   packages/server:
     dependencies:
+      '@epub/lib':
+        specifier: workspace:*
+        version: link:../lib
       '@trpc/server':
         specifier: 11.0.0-rc.608
         version: 11.0.0-rc.608
