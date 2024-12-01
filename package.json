@@ -64,6 +64,7 @@
     "build": "pnpm -F \"@epub/*\" build",
     "watch": "pnpm -F \"@epub/*\" --parallel watch",
     "client": "pnpm -F \"@epub/client\"",
-    "serve": "pnpm -F \"@epub/server\" dev"
+    "serve": "pnpm -F \"@epub/server\" dev",
+    "indexing": "tsx indexing.ts"
   }
 }

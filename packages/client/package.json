@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "indexing": "pnpm exec tsx indexing.ts",
     "build": "tsc -b -v && vite build -d",
     "preview": "vite preview",
     "start": "pnpm build && pnpm preview",

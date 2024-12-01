@@ -1,8 +1,5 @@
 import * as fflate from 'fflate'
 import { XMLParser } from 'fast-xml-parser'
-// import { JSDOM } from 'jsdom'
-import path from 'path-browserify-esm'
-// import path from 'path'
 
 export interface EpubMetaValue {
   name: string
@@ -25,9 +22,6 @@ export interface EpubSpineItem {
   item: EpubManifestItem
   prop?: string
 }
-
-const pathJoin = (...parts: string[]) => path.join(...parts)
-const pathDir = (x: string) => path.dirname(x)
 
 export const CreateEpub = (epubFile: Uint8Array) => {
   const xmlParser = new XMLParser({
@@ -123,7 +117,15 @@ export const CreateEpub = (epubFile: Uint8Array) => {
   }
 }
 
-export const CreateEpubController = (epub: Epub) => {
+interface PathLib {
+  join: (...parts: string[]) => string
+  dirname: (path: string) => string
+}
+export const CreateEpubController = (
+  epub: Epub,
+  domParser: DOMParser,
+  path: PathLib,
+) => {
   const { epubData } = epub
   const getCoverImage = () => {
     const cover = epub.metaData.meta.find((x) => x.name === 'cover')
@@ -133,64 +135,60 @@ export const CreateEpubController = (epub: Epub) => {
     return epubData[`EPUB/${coverItem.href}`]
   }
 
-  const getPage = (index: number): Promise<string | undefined> => {
-    // const domParser = new new JSDOM().window.DOMParser()
-    const domParser = new DOMParser()
-    return new Promise((resolve) => {
-      if (index < 0 || epub.spine.length <= index) {
-        resolve(undefined)
-      }
+  const getPage = async (index: number): Promise<string | undefined> => {
+    if (index < 0 || epub.spine.length <= index) {
+      return undefined
+    }
 
-      const pageInfo = epub.spine[index]
-      const pagePath = `EPUB/${pageInfo.item.href}`
-      const pageDir = pathDir(pagePath)
-      const pageData = epubData[pagePath]
+    const pageInfo = epub.spine[index]
+    const pagePath = `EPUB/${pageInfo.item.href}`
+    const pageDir = path.dirname(pagePath)
+    const pageData = epubData[pagePath]
 
-      // CSSとかimgとかをEPUB内のファイルで置き換える
-      const pageDom = domParser.parseFromString(
-        Buffer.from(pageData).toString('utf8'),
-        'text/html',
+    // CSSとかimgとかをEPUB内のファイルで置き換える
+    const pageDom = domParser.parseFromString(
+      Buffer.from(pageData).toString('utf8'),
+      'text/html',
+    )
+
+    // CSSの置き換え
+    const head = pageDom.querySelector('head')
+    if (head) {
+      const cssLinks = Array.from(head.querySelectorAll('link')).filter(
+        (link) => {
+          const rel = link.rel
+          return rel === 'stylesheet'
+        },
       )
+      for (const cssLink of cssLinks) {
+        head.removeChild(cssLink)
 
-      // CSSの置き換え
-      const head = pageDom.querySelector('head')
-      if (head) {
-        const cssLinks = Array.from(head.querySelectorAll('link')).filter(
-          (link) => {
-            const rel = link.rel
-            return rel === 'stylesheet'
-          },
-        )
-        for (const cssLink of cssLinks) {
-          head.removeChild(cssLink)
-
-          const cssPath = pathJoin(pageDir, cssLink.getAttribute('href') ?? '')
-          const cssData = epubData[cssPath]
-          const cssText = Buffer.from(cssData).toString('utf8')
-          const style = pageDom.createElement('style')
-          style.textContent = cssText
-          head.appendChild(style)
-        }
+        const cssPath = path.join(pageDir, cssLink.getAttribute('href') ?? '')
+        const cssData = epubData[cssPath]
+        const cssText = Buffer.from(cssData).toString('utf8')
+        const style = pageDom.createElement('style')
+        style.textContent = cssText
+        head.appendChild(style)
       }
+    }
 
-      // Imgの置き換え
-      const imgs = Array.from(pageDom.querySelectorAll('img'))
-      for (const img of imgs) {
-        const imgPath = pathJoin(pageDir, img.getAttribute('src') ?? '')
-        const imgData = epubData[imgPath]
+    // Imgの置き換え
+    const imgs = Array.from(pageDom.querySelectorAll('img'))
+    for (const img of imgs) {
+      const imgPath = path.join(pageDir, img.getAttribute('src') ?? '')
+      const imgData = epubData[imgPath]
 
-        img.src = `data:image/png;base64,${Buffer.from(imgData).toString(
-          'base64',
-        )}`
-        // // epubの情報が嘘かもしれないので上書きする
-        // img.onload = () => {
-        //   img.setAttribute('width', img.width.toString());
-        //   img.setAttribute('height', img.height.toString());
-        // };
-      }
+      img.src = `data:image/png;base64,${Buffer.from(imgData).toString(
+        'base64',
+      )}`
+      // // epubの情報が嘘かもしれないので上書きする
+      // img.onload = () => {
+      //   img.setAttribute('width', img.width.toString());
+      //   img.setAttribute('height', img.height.toString());
+      // };
+    }
 
-      resolve(pageDom.querySelector('html')?.outerHTML)
-    })
+    return pageDom.querySelector('html')?.outerHTML
   }
 
   const isFixedLayout =

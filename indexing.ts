@@ -8,7 +8,12 @@ import {
 } from 'fs'
 import path from 'path'
 import sharp from 'sharp'
-import { Book, CreateEpub, CreateEpubController } from './src/_services'
+import { JSDOM } from 'jsdom'
+import {
+  CreateEpub,
+  CreateEpubController,
+} from './packages/client/src/_services'
+import { Book } from './packages/server/src/trpc'
 
 const run = async () => {
   const bookDir = './public/books'
@@ -58,7 +63,9 @@ const run = async () => {
         resolve(readFileSync(epubFilepath)),
       )
         .then((fileData) => CreateEpub(fileData))
-        .then((epub) => CreateEpubController(epub))
+        .then((epub) =>
+          CreateEpubController(epub, new new JSDOM().window.DOMParser(), path),
+        )
         .then((ctrl) => {
           return {
             coverImage: ctrl.getCoverImage(),

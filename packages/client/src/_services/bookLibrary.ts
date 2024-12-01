@@ -3,6 +3,7 @@ import { BookSeries, createBookRepository } from './bookRepository'
 import { useCallback, useMemo, useState } from 'react'
 import { trpc } from './trpc'
 import { CreateEpub, CreateEpubController } from './epub'
+import path from 'path-browserify-esm'
 
 export const CreateBookLibrary = () => {
   const [seriesList, setSeriesList] = useState<BookSeries[]>()
@@ -67,7 +68,7 @@ export const CreateBookLibrary = () => {
       const res = await fetch('/api/book/' + book.id)
       const epubData = await res.arrayBuffer()
       const epub = CreateEpub(new Uint8Array(epubData))
-      const ctrl = CreateEpubController(epub)
+      const ctrl = CreateEpubController(epub, new DOMParser(), path)
 
       for (let pageIndex = 0; pageIndex < book.pageCount; pageIndex++) {
         const progress = (pageIndex + 1) / book.pageCount
