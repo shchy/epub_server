@@ -4,7 +4,7 @@ import cors from 'cors'
 import https from 'https'
 import dotenv from 'dotenv'
 import { createTrpcRouter } from './trpc'
-import { createCache } from './trpc/cache'
+// import { createCache } from './trpc/cache'
 import fs from 'fs'
 import { loadIndexFile } from './trpc/handlers'
 
@@ -17,7 +17,7 @@ app.use(
   createTrpcRouter({
     indexFilePath: process.env.indexFilePath as string,
     epubFileDir: process.env.epubFileDir as string,
-    bookCache: createCache(),
+    // bookCache: createCache(),
   }).trpcHandler,
 )
 app.use(

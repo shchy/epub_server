@@ -1,14 +1,14 @@
 import { initTRPC } from '@trpc/server'
 import * as trpcExpress from '@trpc/server/adapters/express'
 import { getBooks } from './handlers'
-import { BookCache } from './cache'
+// import { BookCache } from './cache'
 
 const t = initTRPC.create()
 export const router = t.router
 export const procedure = t.procedure
 
 export interface BookAPIParams {
-  bookCache: BookCache
+  // bookCache: BookCache
   indexFilePath: string
   epubFileDir: string
 }
