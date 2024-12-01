@@ -52,11 +52,11 @@ export default defineConfig({
     proxy: {
       '/trpc': {
         secure: false,
-        target: 'http://localhost:3000',
+        target: 'http://localhost:8080',
       },
       '/thumbnail': {
         secure: false,
-        target: 'http://localhost:3000',
+        target: 'http://localhost:8080',
       },
     },
     // cors: {
