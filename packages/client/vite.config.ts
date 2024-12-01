@@ -41,6 +41,38 @@ const pwa = await VitePWA({
     globIgnores: ['**/*.epub'],
     maximumFileSizeToCacheInBytes: 1024 * 1024 * 1024 * 1,
     navigateFallback: '/index.html',
+    runtimeCaching: [
+      {
+        urlPattern: /.+(.png)$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'thumbnail',
+          expiration: {
+            maxEntries: 1000,
+            maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
+          },
+          cacheableResponse: {
+            statuses: [200],
+          },
+          rangeRequests: true,
+        },
+      },
+      {
+        urlPattern: /.+(\/api\/book)$/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'index',
+          expiration: {
+            maxEntries: 10,
+            maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
+          },
+          cacheableResponse: {
+            statuses: [200],
+          },
+          rangeRequests: true,
+        },
+      },
+    ],
   },
 })
 

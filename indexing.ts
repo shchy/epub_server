@@ -12,7 +12,10 @@ import { JSDOM } from 'jsdom'
 import { Book, CreateEpub, CreateEpubController } from './packages/lib'
 
 const run = async () => {
-  const staticRoot = './public'
+  const rootDir = process.argv.slice(2)[0]
+  if (!rootDir) return
+
+  const staticRoot = rootDir
   const bookDir = path.join(staticRoot, 'books')
   const thumbnailDir = path.join(staticRoot, 'thumbnail')
 
@@ -91,7 +94,7 @@ const run = async () => {
         name: book.name,
         filePath: epubFileName,
         pageCount: book.pageCount,
-        thumbnailPath: thumbnailPath.replace('public', ''),
+        thumbnailPath: thumbnailPath.replace(staticRoot, ''),
         addDate: new Date().getTime(),
       })
 

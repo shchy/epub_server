@@ -56,14 +56,41 @@ export const CreateBookLibrary = () => {
         return
       }
 
+      const downloadProgressRasio = 0.8
+
       const res = await fetch('/api/book/' + book.id)
-      const epubData = await res.arrayBuffer()
+      if (!res.body) return
+      if (!res.headers) return
+      const reader = res.body.getReader()
+      const contentLength = +(res.headers.get('Content-Length') ?? '0')
+      let receivedLength = 0
+      const chunks: Uint8Array[] = []
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) {
+          break
+        }
+        chunks.push(value)
+        receivedLength += value.length
+        setProgress((receivedLength / contentLength) * downloadProgressRasio)
+      }
+
+      const epubData = new Uint8Array(receivedLength)
+      let position = 0
+      for (const chunk of chunks) {
+        epubData.set(chunk, position)
+        position += chunk.length
+      }
+
+      // const epubData = await res.arrayBuffer()
       const epub = CreateEpub(new Uint8Array(epubData))
       const ctrl = CreateEpubController(epub, new DOMParser(), path)
 
       for (let pageIndex = 0; pageIndex < book.pageCount; pageIndex++) {
         const progress = (pageIndex + 1) / book.pageCount
-        setProgress(progress)
+        setProgress(
+          downloadProgressRasio + progress * (1 - downloadProgressRasio),
+        )
 
         const item = await repo.getPage(bookId, pageIndex)
         if (!item) {
