@@ -10,8 +10,8 @@
 `pnpm indexing ./mount`  
 
 ### 3. サーバにコピー
-`rsync -r -v --progress --size-only ssh ./books/ pi@raspberrypi.local:/home/pi/src/books`
-`rsync -r -v --progress --size-only ssh ./thumbnail/ pi@raspberrypi.local:/home/pi/src/thumbnail`
+`rsync -r -v --progress --size-only ssh ./mount/books/ pi@raspberrypi.local:/home/pi/src/books`
+`rsync -r -v --progress --size-only ssh ./mount/thumbnail/ pi@raspberrypi.local:/home/pi/src/thumbnail`
 
 ## サーバ(Raspberrypi)
 
