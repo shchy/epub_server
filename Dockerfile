@@ -53,5 +53,6 @@ CMD ["node","bin"]
 #   -v $(pwd)/mount/thumbnail:/serve/public/thumbnail \
 #   -v $(pwd)/mount/cert/cert.pem:/serve/cert/cert.pem \
 #   -v $(pwd)/mount/cert/key.pem:/serve/cert/key.pem \
-#   -it epub ash
+#   -it epub \
+#   ash
 

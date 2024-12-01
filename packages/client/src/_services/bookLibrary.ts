@@ -1,8 +1,7 @@
 import { MakeContext } from './contextHelper'
 import { BookSeries, createBookRepository } from './bookRepository'
 import { useCallback, useMemo, useState } from 'react'
-import { trpc } from './trpc'
-import { CreateEpub, CreateEpubController } from '@epub/lib'
+import { Book, CreateEpub, CreateEpubController } from '@epub/lib'
 import path from 'path-browserify-esm'
 
 export const CreateBookLibrary = () => {
@@ -16,7 +15,7 @@ export const CreateBookLibrary = () => {
     const xs = await repo.getSeries()
 
     try {
-      const bookIndex = await trpc.book.query()
+      const bookIndex = (await (await fetch('/api/book')).json()) as Book[]
       const books = xs.flatMap((x) => x.books)
       for (const book of bookIndex) {
         const exists = books.some((x) => x.id === book.id)
@@ -43,15 +42,7 @@ export const CreateBookLibrary = () => {
   }
 
   const getBookPage = async (bookId: string, pageIndex: number) => {
-    const page = await repo.getPage(bookId, pageIndex)
-    if (!page) {
-      // page = await trpc.getBookPage.query({ bookId, pageIndex })
-      // if (page) {
-      //   repo.putPage(bookId, pageIndex, page)
-      // }
-      return
-    }
-    return page
+    return await repo.getPage(bookId, pageIndex)
   }
 
   const epubDownload = async (
@@ -77,10 +68,6 @@ export const CreateBookLibrary = () => {
         const item = await repo.getPage(bookId, pageIndex)
         if (!item) {
           const html = await ctrl.getPage(pageIndex)
-          // const html = await trpc.getBookPage.query({
-          //   bookId: book.id,
-          //   pageIndex: pageIndex,
-          // })
           if (!html) continue
           await repo.putPage(bookId, pageIndex, html)
         }
