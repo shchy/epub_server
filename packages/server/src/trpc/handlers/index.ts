@@ -1,2 +1,2 @@
 export * from './getBooks'
-export * from './getBookPage'
+// export * from './getBookPage'

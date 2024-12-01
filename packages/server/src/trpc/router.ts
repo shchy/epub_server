@@ -1,6 +1,6 @@
 import { initTRPC } from '@trpc/server'
 import * as trpcExpress from '@trpc/server/adapters/express'
-import { getBooks, getBookPage } from './handlers'
+import { getBooks } from './handlers'
 import { BookCache } from './cache'
 
 const t = initTRPC.create()
@@ -23,7 +23,7 @@ export const createTrpcRouter = (prms: BookAPIParams) => {
 
   const appRouter = router({
     book: getBooks(prms),
-    getBookPage: getBookPage(prms),
+    // getBookPage: getBookPage(prms),
   })
 
   const trpcHandler = trpcExpress.createExpressMiddleware({

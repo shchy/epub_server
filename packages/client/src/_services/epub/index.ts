@@ -1,8 +1,8 @@
 import * as fflate from 'fflate'
 import { XMLParser } from 'fast-xml-parser'
-import { JSDOM } from 'jsdom'
-// import path from 'path-browserify-esm'
-import path from 'path'
+// import { JSDOM } from 'jsdom'
+import path from 'path-browserify-esm'
+// import path from 'path'
 
 export interface EpubMetaValue {
   name: string
@@ -134,7 +134,8 @@ export const CreateEpubController = (epub: Epub) => {
   }
 
   const getPage = (index: number): Promise<string | undefined> => {
-    const domParser = new new JSDOM().window.DOMParser()
+    // const domParser = new new JSDOM().window.DOMParser()
+    const domParser = new DOMParser()
     return new Promise((resolve) => {
       if (index < 0 || epub.spine.length <= index) {
         resolve(undefined)

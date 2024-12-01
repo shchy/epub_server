@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import { createTrpcRouter } from './trpc'
 import { createCache } from './trpc/cache'
 import fs from 'fs'
+import { loadIndexFile } from './trpc/handlers'
 
 dotenv.config()
 
@@ -24,6 +25,20 @@ app.use(
   express
     .Router()
     .use(express.static(process.env.publicDir as string))
+    .get('/api/book/:id', (req, res) => {
+      const { id } = req.params
+      const books = loadIndexFile(process.env.indexFilePath as string)
+      const book = books.find((x) => x.id === id)
+      if (!book) {
+        return
+      }
+      const filePath = path.join(
+        process.env.epubFileDir as string,
+        book.filePath,
+      )
+      const absPath = path.resolve(filePath)
+      res.sendFile(absPath)
+    })
     .get('*', (_, res) => {
       res.sendFile(path.join(__dirname, './public/index.html'))
     }),

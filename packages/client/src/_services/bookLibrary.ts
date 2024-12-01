@@ -2,6 +2,7 @@ import { MakeContext } from './contextHelper'
 import { BookSeries, createBookRepository } from './bookRepository'
 import { useCallback, useMemo, useState } from 'react'
 import { trpc } from './trpc'
+import { CreateEpub, CreateEpubController } from './epub'
 
 export const CreateBookLibrary = () => {
   const [seriesList, setSeriesList] = useState<BookSeries[]>()
@@ -41,12 +42,13 @@ export const CreateBookLibrary = () => {
   }
 
   const getBookPage = async (bookId: string, pageIndex: number) => {
-    let page = await repo.getPage(bookId, pageIndex)
+    const page = await repo.getPage(bookId, pageIndex)
     if (!page) {
-      page = await trpc.getBookPage.query({ bookId, pageIndex })
-      if (page) {
-        repo.putPage(bookId, pageIndex, page)
-      }
+      // page = await trpc.getBookPage.query({ bookId, pageIndex })
+      // if (page) {
+      //   repo.putPage(bookId, pageIndex, page)
+      // }
+      return
     }
     return page
   }
@@ -62,16 +64,22 @@ export const CreateBookLibrary = () => {
         return
       }
 
+      const res = await fetch('/api/book/' + book.id)
+      const epubData = await res.arrayBuffer()
+      const epub = CreateEpub(new Uint8Array(epubData))
+      const ctrl = CreateEpubController(epub)
+
       for (let pageIndex = 0; pageIndex < book.pageCount; pageIndex++) {
         const progress = (pageIndex + 1) / book.pageCount
         setProgress(progress)
 
         const item = await repo.getPage(bookId, pageIndex)
         if (!item) {
-          const html = await trpc.getBookPage.query({
-            bookId: book.id,
-            pageIndex: pageIndex,
-          })
+          const html = await ctrl.getPage(pageIndex)
+          // const html = await trpc.getBookPage.query({
+          //   bookId: book.id,
+          //   pageIndex: pageIndex,
+          // })
           if (!html) continue
           await repo.putPage(bookId, pageIndex, html)
         }

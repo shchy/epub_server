@@ -58,6 +58,10 @@ export default defineConfig({
         secure: false,
         target: 'http://localhost:8080',
       },
+      '/api': {
+        secure: false,
+        target: 'http://localhost:8080',
+      },
     },
     // cors: {
     //   origin: '*',
