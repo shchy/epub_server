@@ -1,12 +1,22 @@
 import { MakeContext } from './contextHelper'
 import { BookSeries, createBookRepository } from './bookRepository'
 import { useCallback, useMemo, useState } from 'react'
-import { Book, CreateEpub, CreateEpubController } from '@epub/lib'
+import {
+  Book,
+  CreateEpub,
+  CreateEpubController,
+  EpubController,
+} from '@epub/lib'
 import path from 'path-browserify-esm'
+import { createCache } from './cache'
 
 export const CreateBookLibrary = () => {
   const [seriesList, setSeriesList] = useState<BookSeries[]>()
   const repo = useMemo(() => createBookRepository(), [])
+  const ctrlCache = useMemo(
+    () => createCache<EpubController>({ cacheSize: 2 }),
+    [],
+  )
 
   const getSeries = useCallback(async () => {
     if (seriesList !== undefined) {
@@ -42,7 +52,17 @@ export const CreateBookLibrary = () => {
   }
 
   const getBookPage = async (bookId: string, pageIndex: number) => {
-    return await repo.getPage(bookId, pageIndex)
+    const item = ctrlCache.get((x) => x.epub.metaData.identifier === bookId)
+    let ctrl = item?.item
+    if (!ctrl) {
+      const epubItem = await repo.getEpub(bookId)
+      if (!epubItem) return
+      const epub = CreateEpub(new Uint8Array(await epubItem.data.arrayBuffer()))
+      ctrl = CreateEpubController(epub, new DOMParser(), path)
+      ctrlCache.set(ctrl)
+    }
+
+    return await ctrl.getPage(pageIndex)
   }
 
   const epubDownload = async (
@@ -52,54 +72,67 @@ export const CreateBookLibrary = () => {
     try {
       const book = await repo.getBook(bookId)
       if (!book) return
-      if (book.isCached) {
-        return
-      }
+      // if (book.isCached) {
+      //   return
+      // }
 
-      const downloadProgressRasio = 0.8
-
-      const res = await fetch('/api/book/' + book.id)
-      if (!res.body) return
-      if (!res.headers) return
-      const reader = res.body.getReader()
-      const contentLength = +(res.headers.get('Content-Length') ?? '0')
-      let receivedLength = 0
-      const chunks: Uint8Array[] = []
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) {
-          break
+      const downloadProgressRasio = 0.99
+      // epub取得
+      let epubItem = await repo.getEpub(book.id)
+      if (!epubItem) {
+        const res = await fetch('/api/book/' + book.id)
+        if (!res.body) return
+        if (!res.headers) return
+        const reader = res.body.getReader()
+        const contentLength = +(res.headers.get('Content-Length') ?? '0')
+        let receivedLength = 0
+        const chunks: Uint8Array[] = []
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) {
+            break
+          }
+          chunks.push(value)
+          receivedLength += value.length
+          setProgress((receivedLength / contentLength) * downloadProgressRasio)
         }
-        chunks.push(value)
-        receivedLength += value.length
-        setProgress((receivedLength / contentLength) * downloadProgressRasio)
+
+        const epubData = new Uint8Array(receivedLength)
+        let position = 0
+        for (const chunk of chunks) {
+          epubData.set(chunk, position)
+          position += chunk.length
+        }
+
+        const blob = new Blob(chunks)
+        epubItem = {
+          id: book.id,
+          data: blob,
+        }
+        await repo.putEpub(epubItem)
+      } else {
+        setProgress(downloadProgressRasio)
       }
 
-      const epubData = new Uint8Array(receivedLength)
-      let position = 0
-      for (const chunk of chunks) {
-        epubData.set(chunk, position)
-        position += chunk.length
-      }
-
-      // const epubData = await res.arrayBuffer()
-      const epub = CreateEpub(new Uint8Array(epubData))
+      const epub = CreateEpub(new Uint8Array(await epubItem.data.arrayBuffer()))
       const ctrl = CreateEpubController(epub, new DOMParser(), path)
+      ctrlCache.set(ctrl)
 
-      for (let pageIndex = 0; pageIndex < book.pageCount; pageIndex++) {
-        const progress = (pageIndex + 1) / book.pageCount
-        setProgress(
-          downloadProgressRasio + progress * (1 - downloadProgressRasio),
-        )
+      // for (let pageIndex = 0; pageIndex < book.pageCount; pageIndex++) {
+      //   const progress = (pageIndex + 1) / book.pageCount
+      //   setProgress(
+      //     downloadProgressRasio + progress * (1 - downloadProgressRasio),
+      //   )
 
-        const item = await repo.getPage(bookId, pageIndex)
-        if (!item) {
-          const html = await ctrl.getPage(pageIndex)
-          if (!html) continue
-          await repo.putPage(bookId, pageIndex, html)
-        }
-      }
+      //   const item = await repo.getPage(bookId, pageIndex)
+      //   if (!item) {
+      //     const html = await ctrl.getPage(pageIndex)
+      //     if (!html) continue
+      //     await repo.putPage(bookId, pageIndex, html)
+      //   }
+      // }
       await repo.setCached(bookId)
+      setProgress(1)
 
       // const response = await fetch(`/books/${book.filePath}`)
       // const data = await response.arrayBuffer()

@@ -39,6 +39,14 @@ export const BookComponent = () => {
     })
   }, [])
 
+  useEffect(() => {
+    const page = searchParams.get('page')
+    if (!page) return
+
+    const pageIndex = parseInt(page)
+    toPage(pageIndex)
+  }, [searchParams, pages])
+
   const toPage = useCallback(
     (pageIndex: number) => {
       if (pageIndex < 0) {
@@ -60,14 +68,6 @@ export const BookComponent = () => {
   const prev = async () => {
     toPage(currentPage - 1)
   }
-
-  useEffect(() => {
-    const page = searchParams.get('page')
-    if (!page) return
-
-    const pageIndex = parseInt(page)
-    toPage(pageIndex)
-  }, [searchParams])
 
   if (!bookId) return <></>
   return (

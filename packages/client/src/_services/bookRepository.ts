@@ -7,6 +7,12 @@ export interface BookSeries {
   books: Book[]
 }
 
+// Epubバイナリ
+interface EpubDBItem {
+  id: string
+  data: Blob
+}
+
 // 本のページ情報
 interface PageDBItem {
   id: string
@@ -27,6 +33,12 @@ export const createBookRepository = () => {
   const bookStore = createDB<Book>({
     dbName: 'bookDB',
     storeName: 'books',
+    keyPath: 'id',
+  })
+
+  const epubStore = createDB<EpubDBItem>({
+    dbName: 'epubDB',
+    storeName: 'epub',
     keyPath: 'id',
   })
 
@@ -80,6 +92,14 @@ export const createBookRepository = () => {
     return await bookStore.get(bookId)
   }
 
+  const putEpub = async (item: EpubDBItem) => {
+    await epubStore.put(item)
+  }
+
+  const getEpub = async (bookId: string) => {
+    return await epubStore.get(bookId)
+  }
+
   const getPage = async (bookId: string, pageIndex: number) => {
     const item = await pageStore.get(createPageDBItemKey(bookId, pageIndex))
     return item?.html
@@ -115,6 +135,8 @@ export const createBookRepository = () => {
     getSeries,
     getBook,
     putBook,
+    getEpub,
+    putEpub,
     getPage,
     putPage,
     setCached,
