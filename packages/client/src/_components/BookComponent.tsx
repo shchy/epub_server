@@ -19,8 +19,6 @@ export const BookComponent = () => {
   useEffect(() => {
     loading(async (setProgress) => {
       if (!bookId) return
-      // ダウンロード
-      await epubDownload(bookId, setProgress)
 
       const book = await getBook(bookId)
       if (!book) {
@@ -28,6 +26,9 @@ export const BookComponent = () => {
         return
       }
       setTitle(book.name)
+
+      // ダウンロード
+      await epubDownload(bookId, setProgress)
 
       const pages = [...Array(book.pageCount).keys()].map<
         Omit<PageProp, 'currentPage'>

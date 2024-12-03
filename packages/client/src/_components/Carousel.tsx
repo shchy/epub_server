@@ -19,6 +19,23 @@ export const Carousel = <T,>({
 }) => {
   const parentElement = useRef<HTMLDivElement>(null)
   const [observer, setObserver] = useState<IntersectionObserver>()
+  const [nodes, setNodes] = useState<React.ReactNode>([])
+  useEffect(() => {
+    setNodes(
+      list.map((item, i) => {
+        return (
+          <CarouselItem
+            key={i}
+            observer={observer}
+            itemHeight={itemHeight}
+            itemWidth={itemWidth}
+          >
+            {element({ item })}
+          </CarouselItem>
+        )
+      }),
+    )
+  }, [list, element, observer, itemHeight, itemWidth])
   useEffect(() => {
     const parent = parentElement.current
     if (!parent) return
@@ -65,18 +82,7 @@ export const Carousel = <T,>({
         direction: direction ?? 'ltr',
       }}
     >
-      {list.map((item, i) => {
-        return (
-          <CarouselItem
-            key={i}
-            observer={observer}
-            itemHeight={itemHeight}
-            itemWidth={itemWidth}
-          >
-            {element({ item })}
-          </CarouselItem>
-        )
-      })}
+      {nodes}
     </div>
   )
 }

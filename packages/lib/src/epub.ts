@@ -182,6 +182,7 @@ export const CreateEpubController = (
       if (!b64) {
         const imgData = epubData[imgPath]
         b64 = Buffer.from(imgData).toString('base64')
+        cache.set(imgPath, b64)
       }
 
       img.src = `data:image/png;base64,${b64}`

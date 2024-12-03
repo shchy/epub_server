@@ -4,6 +4,6 @@ export interface Book {
   thumbnailPath?: string
   pageCount: number
   filePath: string
-  isCached?: boolean
+  // isCached?: boolean
   addDate?: number
 }
