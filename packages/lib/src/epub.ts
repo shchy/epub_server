@@ -173,14 +173,18 @@ export const CreateEpubController = (
     }
 
     // Imgの置き換え
+    const cache = new Map<string, string>()
     const imgs = Array.from(pageDom.querySelectorAll('img'))
     for (const img of imgs) {
       const imgPath = path.join(pageDir, img.getAttribute('src') ?? '')
-      const imgData = epubData[imgPath]
 
-      img.src = `data:image/png;base64,${Buffer.from(imgData).toString(
-        'base64',
-      )}`
+      let b64 = cache.get(imgPath)
+      if (!b64) {
+        const imgData = epubData[imgPath]
+        b64 = Buffer.from(imgData).toString('base64')
+      }
+
+      img.src = `data:image/png;base64,${b64}`
       // // epubの情報が嘘かもしれないので上書きする
       // img.onload = () => {
       //   img.setAttribute('width', img.width.toString());

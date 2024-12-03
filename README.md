@@ -7,7 +7,7 @@
 
 ### 2. index.jsonとサムネイルの生成
 `pnpm indexing <epub配置フォルダ>`  
-`pnpm indexing ./mount`  
+`pnpm indexing mount`  
 
 ### 3. サーバにコピー
 `rsync -r -v --progress --size-only ssh ./mount/books/ pi@raspberrypi.local:/home/pi/src/books`
