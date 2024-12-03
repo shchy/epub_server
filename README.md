@@ -13,6 +13,8 @@
 `rsync -r -v --progress --size-only ssh ./mount/books/ pi@raspberrypi.local:/home/pi/src/books`
 `rsync -r -v --progress --size-only ssh ./mount/thumbnail/ pi@raspberrypi.local:/home/pi/src/thumbnail`
 
+`ping -4 raspberrypi.local`
+
 ## サーバ(Raspberrypi)
 
 ### 1. 最新ソース取得(コード修正がない場合は不要)
