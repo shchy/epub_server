@@ -3,54 +3,19 @@ import express from 'express'
 import cors from 'cors'
 import https from 'https'
 import dotenv from 'dotenv'
-// import { createTrpcRouter } from './trpc'
-// import { createCache } from './trpc/cache'
 import fs from 'fs'
-// import { loadIndexFile } from './trpc/handlers'
 import { createApiRoute } from './api'
 
 dotenv.config()
 
 const app = express()
 app.options('*', cors())
-// app.use(
-//   '/trpc',
-//   createTrpcRouter({
-//     indexFilePath: process.env.indexFilePath as string,
-//     epubFileDir: process.env.epubFileDir as string,
-//     // bookCache: createCache(),
-//   }).trpcHandler,
-// )
-// app.use(
-//   '/',
-//   express
-//     .Router()
-//     .use(express.static(process.env.publicDir as string))
-//     .get('/api/book/:id', (req, res) => {
-//       const { id } = req.params
-//       const books = loadIndexFile(process.env.indexFilePath as string)
-//       const book = books.find((x) => x.id === id)
-//       if (!book) {
-//         return
-//       }
-//       const filePath = path.join(
-//         process.env.epubFileDir as string,
-//         book.filePath,
-//       )
-//       const absPath = path.resolve(filePath)
-//       res.sendFile(absPath)
-//     })
-//     .get('*', (_, res) => {
-//       res.sendFile(path.join(__dirname, './public/index.html'))
-//     }),
-// )
 
 app.use(
   '/api',
   createApiRoute({
     indexFilePath: process.env.indexFilePath as string,
     epubFileDir: process.env.epubFileDir as string,
-    // bookCache: createCache(),
   }),
 )
 app.use(express.static(process.env.publicDir as string))

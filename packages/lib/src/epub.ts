@@ -135,10 +135,27 @@ export const CreateEpubController = (
     return epubData[`EPUB/${coverItem.href}`]
   }
 
+  const isVisibility = (elm: HTMLElement) => {
+    const styles = window.getComputedStyle(elm)
+    const displayValue = styles.getPropertyValue('display')
+    if (displayValue === 'none') {
+      return false
+    }
+    const visibility = styles.getPropertyValue('visibility')
+    if (visibility === 'hidden') {
+      return false
+    }
+
+    if (elm.parentElement) {
+      return isVisibility(elm.parentElement)
+    }
+    return true
+  }
   const getPage = async (index: number): Promise<string | undefined> => {
     if (index < 0 || epub.spine.length <= index) {
       return undefined
     }
+    console.log('getPage', index)
 
     const pageInfo = epub.spine[index]
     const pagePath = `EPUB/${pageInfo.item.href}`
@@ -176,16 +193,20 @@ export const CreateEpubController = (
     const cache = new Map<string, string>()
     const imgs = Array.from(pageDom.querySelectorAll('img'))
     for (const img of imgs) {
-      const imgPath = path.join(pageDir, img.getAttribute('src') ?? '')
+      if (isVisibility(img)) {
+        const imgPath = path.join(pageDir, img.getAttribute('src') ?? '')
 
-      let b64 = cache.get(imgPath)
-      if (!b64) {
-        const imgData = epubData[imgPath]
-        b64 = Buffer.from(imgData).toString('base64')
-        cache.set(imgPath, b64)
+        let b64 = cache.get(imgPath)
+        if (!b64) {
+          const imgData = epubData[imgPath]
+          b64 = Buffer.from(imgData).toString('base64')
+          cache.set(imgPath, b64)
+        }
+
+        img.src = `data:image/png;base64,${b64}`
+      } else {
+        img.src = `data:,`
       }
-
-      img.src = `data:image/png;base64,${b64}`
       // // epubの情報が嘘かもしれないので上書きする
       // img.onload = () => {
       //   img.setAttribute('width', img.width.toString());

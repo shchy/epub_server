@@ -13,15 +13,6 @@ export interface EpubDBItem {
   data: Blob
 }
 
-// // 本のページ情報
-// interface PageDBItem {
-//   id: string
-//   html: string
-// }
-// const createPageDBItemKey = (bookId: string, pageIndex: number) =>
-//   `${bookId}!${pageIndex}`
-// 本のページ情報保存済みかどうかを保持する
-
 // 最近読んだ本
 export interface OpenRecent {
   bookId: string
@@ -41,12 +32,6 @@ export const createBookRepository = () => {
     storeName: 'epub',
     keyPath: 'id',
   })
-
-  // const pageStore = createDB<PageDBItem>({
-  //   dbName: 'pageDB',
-  //   storeName: 'pages',
-  //   keyPath: 'id',
-  // })
 
   const recentStore = createDB<OpenRecent>({
     dbName: 'recentDB',
@@ -101,25 +86,6 @@ export const createBookRepository = () => {
     return await epubStore.get(bookId)
   }
 
-  // const getPage = async (bookId: string, pageIndex: number) => {
-  //   const item = await pageStore.get(createPageDBItemKey(bookId, pageIndex))
-  //   return item?.html
-  // }
-
-  // const putPage = async (bookId: string, pageIndex: number, html: string) => {
-  //   await pageStore.put({
-  //     id: createPageDBItemKey(bookId, pageIndex),
-  //     html: html,
-  //   })
-  // }
-
-  // const setCached = async (bookId: string) => {
-  //   const book = await bookStore.get(bookId)
-  //   if (!book) return
-  //   book.isCached = true
-  //   await bookStore.put(book)
-  // }
-
   const saveRecent = async (bookId: string, index: number) => {
     await recentStore.put({
       bookId: bookId,
@@ -138,9 +104,6 @@ export const createBookRepository = () => {
     putBook,
     getEpub,
     putEpub,
-    // getPage,
-    // putPage,
-    // setCached,
     saveRecent,
     listRecents,
   }

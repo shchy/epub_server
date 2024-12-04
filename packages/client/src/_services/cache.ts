@@ -25,7 +25,7 @@ export const createCache = <T>({ cacheSize }: { cacheSize: number }) => {
       return
     }
     findOne.lastAt = new Date()
-    return findOne
+    return findOne.item
   }
 
   return {
@@ -34,4 +34,4 @@ export const createCache = <T>({ cacheSize }: { cacheSize: number }) => {
   }
 }
 
-export type BookCache = ReturnType<typeof createCache>
+export type Cache<T> = ReturnType<typeof createCache<T>>

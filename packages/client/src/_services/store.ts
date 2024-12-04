@@ -54,6 +54,7 @@ export const createDB = <T extends object>({
 
   const put = async (value: T) => {
     const store = await getStore('readwrite')
+
     return new Promise<T>((resolve, reject) => {
       try {
         const req = store.put(value)

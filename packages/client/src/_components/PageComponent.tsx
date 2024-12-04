@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SizeFitComponent } from './SizeFitComponent'
 import { useBookLibrary } from '../_services'
 
@@ -12,24 +12,30 @@ export interface PageProp {
 export const PageComponent = ({ bookId, index, currentPage }: PageProp) => {
   const { getBookPage } = useBookLibrary()
   const [htmlPage, setHtmlPage] = useState<string>()
+  const isPreload = useMemo(
+    () => Math.abs(currentPage - index) < PRE_LOAD_SIZE,
+    [currentPage, index],
+  )
 
   useEffect(() => {
     ;(async () => {
-      const isPreload = Math.abs(currentPage - index) < PRE_LOAD_SIZE
       if (!isPreload) {
-        setHtmlPage(undefined)
+        console.log('delete html', index)
+        // setHtmlPage(undefined)
         return
       } else if (htmlPage !== undefined) {
+        console.log('has html', index)
         return
       }
       try {
+        console.log('get html', index)
         const html = await getBookPage(bookId, index)
         setHtmlPage(html)
       } catch (err) {
         alert(err)
       }
     })()
-  }, [bookId, index, currentPage, htmlPage, getBookPage])
+  }, [bookId, isPreload, htmlPage])
 
   if (!htmlPage) {
     return <></>

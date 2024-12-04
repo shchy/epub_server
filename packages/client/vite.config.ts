@@ -72,6 +72,21 @@ const pwa = await VitePWA({
           rangeRequests: true,
         },
       },
+      {
+        urlPattern: /.+\/api\/book\/.+$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'epub',
+          expiration: {
+            maxEntries: 5,
+            maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
+          },
+          cacheableResponse: {
+            statuses: [200],
+          },
+          rangeRequests: true,
+        },
+      },
     ],
   },
 })
@@ -90,10 +105,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     proxy: {
-      '/trpc': {
-        secure: false,
-        target: 'http://localhost:8080',
-      },
       '/thumbnail': {
         secure: false,
         target: 'http://localhost:8080',
@@ -103,12 +114,6 @@ export default defineConfig({
         target: 'http://localhost:8080',
       },
     },
-    // cors: {
-    //   origin: '*',
-    //   // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    //   // preflightContinue: false,
-    //   // optionsSuccessStatus: 204,
-    // },
   },
   preview: {
     host: '0.0.0.0',
