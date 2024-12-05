@@ -20,12 +20,6 @@ importers:
       '@mui/material':
         specifier: ^6.1.6
         version: 6.1.6(@emotion/react@11.13.3(@types/react@18.3.12)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.12)(react@18.3.1))(@types/react@18.3.12)(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@trpc/client':
-        specifier: 11.0.0-rc.608
-        version: 11.0.0-rc.608(@trpc/server@11.0.0-rc.608)
-      '@trpc/server':
-        specifier: 11.0.0-rc.608
-        version: 11.0.0-rc.608
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -238,9 +232,6 @@ importers:
       '@epub/lib':
         specifier: workspace:*
         version: link:../lib
-      '@trpc/server':
-        specifier: 11.0.0-rc.608
-        version: 11.0.0-rc.608
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -253,24 +244,9 @@ importers:
       express:
         specifier: ^4.21.1
         version: 4.21.1
-      fast-xml-parser:
-        specifier: ^4.5.0
-        version: 4.5.0
-      fflate:
-        specifier: ^0.8.2
-        version: 0.8.2
       https:
         specifier: ^1.0.0
         version: 1.0.0
-      jsdom:
-        specifier: ^25.0.1
-        version: 25.0.1
-      sharp:
-        specifier: ^0.33.5
-        version: 0.33.5
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
 
 packages:
 
@@ -1565,14 +1541,6 @@ packages:
 
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
-
-  '@trpc/client@11.0.0-rc.608':
-    resolution: {integrity: sha512-ZvhYhewiXXo3Kfy7JazVShsJUJTyqgkEV1rjhioJ6r3aIGw0ZS6zyyjcq1w99DTIzRP//FgB239NG5c66Ki9sw==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.608+f75de97b3
-
-  '@trpc/server@11.0.0-rc.608':
-    resolution: {integrity: sha512-+qxeyWlS+1zlTbekG7C+khDGZn788kLJG+ufO8mH/kgbRC+/a0OZSk7tyQI2Pf+UWeKc6KzrTi7TRBOOEBBE1A==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -4815,12 +4783,6 @@ snapshots:
       json5: 2.2.3
       magic-string: 0.25.9
       string.prototype.matchall: 4.0.11
-
-  '@trpc/client@11.0.0-rc.608(@trpc/server@11.0.0-rc.608)':
-    dependencies:
-      '@trpc/server': 11.0.0-rc.608
-
-  '@trpc/server@11.0.0-rc.608': {}
 
   '@types/babel__core@7.20.5':
     dependencies:
