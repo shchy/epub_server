@@ -7,11 +7,11 @@ export interface BookSeries {
   books: Book[]
 }
 
-// Epubバイナリ
-export interface EpubDBItem {
-  id: string
-  data: Blob
-}
+// // Epubバイナリ
+// export interface EpubDBItem {
+//   id: string
+//   data: Blob
+// }
 
 // 最近読んだ本
 export interface OpenRecent {
@@ -27,11 +27,11 @@ export const createBookRepository = () => {
     keyPath: 'id',
   })
 
-  const epubStore = createDB<EpubDBItem>({
-    dbName: 'epubDB',
-    storeName: 'epub',
-    keyPath: 'id',
-  })
+  // const epubStore = createDB<EpubDBItem>({
+  //   dbName: 'epubDB',
+  //   storeName: 'epub',
+  //   keyPath: 'id',
+  // })
 
   const recentStore = createDB<OpenRecent>({
     dbName: 'recentDB',
@@ -77,14 +77,14 @@ export const createBookRepository = () => {
     return await bookStore.get(bookId)
   }
 
-  const putEpub = async (item: EpubDBItem) => {
-    await epubStore.put(item)
-    return item
-  }
+  // const putEpub = async (item: EpubDBItem) => {
+  //   await epubStore.put(item)
+  //   return item
+  // }
 
-  const getEpub = async (bookId: string) => {
-    return await epubStore.get(bookId)
-  }
+  // const getEpub = async (bookId: string) => {
+  //   return await epubStore.get(bookId)
+  // }
 
   const saveRecent = async (bookId: string, index: number) => {
     await recentStore.put({
@@ -102,8 +102,8 @@ export const createBookRepository = () => {
     getSeries,
     getBook,
     putBook,
-    getEpub,
-    putEpub,
+    // getEpub,
+    // putEpub,
     saveRecent,
     listRecents,
   }

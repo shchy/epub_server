@@ -2,40 +2,30 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SizeFitComponent } from './SizeFitComponent'
 import { useBookLibrary } from '../_services'
 
-const PRE_LOAD_SIZE = 5
-
 export interface PageProp {
   bookId: string
   index: number
   currentPage: number
 }
 export const PageComponent = ({ bookId, index, currentPage }: PageProp) => {
-  const { getBookPage } = useBookLibrary()
+  const { getBookPage, PAGE_CACHE_SIZE } = useBookLibrary()
   const [htmlPage, setHtmlPage] = useState<string>()
   const isPreload = useMemo(
-    () => Math.abs(currentPage - index) < PRE_LOAD_SIZE,
-    [currentPage, index],
+    () => Math.abs(currentPage - index) < PAGE_CACHE_SIZE / 2 - 1,
+    [currentPage, index, PAGE_CACHE_SIZE],
   )
+  const hasHtml = useMemo(() => htmlPage !== undefined, [htmlPage])
 
   useEffect(() => {
     ;(async () => {
-      if (!isPreload) {
-        console.log('delete html', index)
-        // setHtmlPage(undefined)
-        return
-      } else if (htmlPage !== undefined) {
-        console.log('has html', index)
-        return
-      }
-      try {
-        console.log('get html', index)
+      if (!isPreload && hasHtml) {
+        setHtmlPage(undefined)
+      } else if (isPreload && !hasHtml) {
         const html = await getBookPage(bookId, index)
         setHtmlPage(html)
-      } catch (err) {
-        alert(err)
       }
     })()
-  }, [bookId, isPreload, htmlPage])
+  }, [bookId, isPreload, hasHtml, getBookPage, index])
 
   if (!htmlPage) {
     return <></>

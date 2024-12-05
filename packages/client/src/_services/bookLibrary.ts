@@ -1,34 +1,30 @@
 import { MakeContext } from './contextHelper'
-import { BookSeries, createBookRepository, EpubDBItem } from './bookRepository'
+import { BookSeries, createBookRepository } from './bookRepository'
 import { useCallback, useMemo, useState } from 'react'
-import {
-  Book,
-  CreateEpub,
-  CreateEpubController,
-  EpubController,
-} from '@epub/lib'
+import { Book, CreateEpub, Epub } from '@epub/lib'
 import path from 'path-browserify-esm'
 import { createCache, Cache } from './cache'
 
-const BOOK_CACHE_SIZE = 1
-const PAGE_CACHE_SIZE = 12
 interface Page {
   index: number
   html: string
 }
 interface PageCache {
   bookId: string
-  ctrl: EpubController
+  epub: Epub
   pages: Cache<Page>
 }
 
 export const CreateBookLibrary = () => {
+  const BOOK_CACHE_SIZE = 1
+  const PAGE_CACHE_SIZE = 12
   const [seriesList, setSeriesList] = useState<BookSeries[]>()
   const repo = useMemo(() => createBookRepository(), [])
   const pageCache = useMemo(
     () => createCache<PageCache>({ cacheSize: BOOK_CACHE_SIZE }),
     [],
   )
+  const domParser = new DOMParser()
 
   const getSeries = useCallback(async () => {
     if (seriesList !== undefined) {
@@ -71,7 +67,7 @@ export const CreateBookLibrary = () => {
 
     let page = item.pages.get((x) => x.index === pageIndex)
     if (!page) {
-      const html = await item.ctrl.getPage(pageIndex)
+      const html = await item.epub.getPage(pageIndex)
       if (!html) return
 
       page = {
@@ -79,9 +75,6 @@ export const CreateBookLibrary = () => {
         html: html,
       }
       item.pages.set(page)
-      console.log('add cache', pageIndex)
-    } else {
-      console.log('hit cache', pageIndex)
     }
     return page?.html
   }
@@ -112,64 +105,25 @@ export const CreateBookLibrary = () => {
     setProgress: (v: number) => void,
   ) => {
     try {
-      // const bin = await repo
-      //   .getEpub(bookId)
-      //   .then((epubItem) => {
-      //     if (epubItem) {
-      //       setProgress(downloadProgressRasio)
-      //       return epubItem.data.arrayBuffer()
-      //     } else {
-      //       return (
-      //         _getEpub(bookId, setProgress)
-      //           .then((chunks) => {
-      //             return new Blob(chunks)
-      //           })
-      //           .then((blob) => {
-      //             return {
-      //               id: bookId,
-      //               data: blob,
-      //             } satisfies EpubDBItem
-      //           })
-      //           // .then((item) => {
-      //           //   return repo.putEpub(item)
-      //           // })
-      //           .then((item) => {
-      //             return item.data.arrayBuffer()
-      //           })
-      //       )
-      //     }
-      //   })
-      // .then((buffer) => {
-      //   return new Uint8Array(buffer)
-      // })
-
       const bin = await _getEpub(bookId, setProgress)
         .then((chunks) => {
           return new Blob(chunks)
         })
-        .then((blob) => {
-          return {
-            id: bookId,
-            data: blob,
-          } satisfies EpubDBItem
-        })
-        // .then((item) => {
-        //   return repo.putEpub(item)
-        // })
-        .then((item) => {
-          return item.data.arrayBuffer()
-        })
+        .then((blob) => blob.arrayBuffer())
         .then((buffer) => {
           return new Uint8Array(buffer)
         })
 
-      const epub = CreateEpub(bin)
-      const ctrl = CreateEpubController(epub, new DOMParser(), path)
+      const epub = CreateEpub({
+        epubFile: bin,
+        domParser,
+        path,
+      })
 
       pageCache.set({
         bookId: bookId,
         pages: createCache<Page>({ cacheSize: PAGE_CACHE_SIZE }),
-        ctrl: ctrl,
+        epub: epub,
       })
 
       setProgress(1)
@@ -179,7 +133,6 @@ export const CreateBookLibrary = () => {
   }
 
   const saveRecent = repo.saveRecent
-
   const listRecents = repo.listRecents
 
   return {
@@ -189,10 +142,10 @@ export const CreateBookLibrary = () => {
     epubDownload,
     saveRecent,
     listRecents,
+    PAGE_CACHE_SIZE,
   }
 }
 
 export const { provider: BookLibraryProvider, use: useBookLibrary } =
   MakeContext(CreateBookLibrary)
-
 export type BookLibrary = ReturnType<typeof CreateBookLibrary>

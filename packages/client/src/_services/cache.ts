@@ -12,10 +12,8 @@ export const createCache = <T>({ cacheSize }: { cacheSize: number }) => {
     })
 
     if (cacheSize < cache.length) {
-      console.warn(`will remove cache ${cache.length}`)
       cache.sort((a, b) => (a.lastAt.getTime() - b.lastAt.getTime() ? -1 : 1))
       cache.splice(cacheSize)
-      console.warn(`done remove cache ${cache.length}`)
     }
   }
 

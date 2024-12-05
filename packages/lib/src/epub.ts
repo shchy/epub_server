@@ -23,7 +23,20 @@ export interface EpubSpineItem {
   prop?: string
 }
 
-export const CreateEpub = (epubFile: Uint8Array) => {
+interface PathLib {
+  join: (...parts: string[]) => string
+  dirname: (path: string) => string
+}
+
+export const CreateEpub = ({
+  epubFile,
+  domParser,
+  path,
+}: {
+  epubFile: Uint8Array
+  domParser: DOMParser
+  path: PathLib
+}) => {
   const xmlParser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '@',
@@ -111,22 +124,6 @@ export const CreateEpub = (epubFile: Uint8Array) => {
   const epubData = fflate.unzipSync(epubFile)
   const epub = parseEpub(epubData)
 
-  return {
-    ...epub,
-    epubData,
-  }
-}
-
-interface PathLib {
-  join: (...parts: string[]) => string
-  dirname: (path: string) => string
-}
-export const CreateEpubController = (
-  epub: Epub,
-  domParser: DOMParser,
-  path: PathLib,
-) => {
-  const { epubData } = epub
   const getCoverImage = () => {
     const cover = epub.metaData.meta.find((x) => x.name === 'cover')
     if (!cover) return
@@ -232,8 +229,10 @@ export const CreateEpubController = (
       height: parseInt(wh[1]),
     }
   })()
+
   return {
-    epub,
+    ...epub,
+
     getCoverImage,
     getPage,
     isFixedLayout,
@@ -242,4 +241,3 @@ export const CreateEpubController = (
 }
 
 export type Epub = ReturnType<typeof CreateEpub>
-export type EpubController = ReturnType<typeof CreateEpubController>
