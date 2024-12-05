@@ -37,6 +37,7 @@ export const BookComponent = () => {
         index: i,
       }))
       setPages(pages)
+      // setCurrentPage(0)
     })
   }, [])
 
@@ -63,6 +64,32 @@ export const BookComponent = () => {
   )
 
   const next = async () => {
+    // if (currentPage + 1 >= pages.length) {
+    //   console.log('asdf')
+    //   const series = await getSeries()
+    //   const currentSeries = series.find((s) =>
+    //     s.books.some((b) => b.id === bookId),
+    //   )
+    //   if (currentSeries) {
+    //     console.log('qwerty')
+    //     const books = [...(currentSeries.books ?? [])]
+    //     const sortedBooks = books
+    //       .sort((a, b) => (a.id < b.id ? -1 : 1))
+    //       .map((book, index) => ({ book, index }))
+    //     const currentOfSeries = sortedBooks.find((x) => x.book.id === bookId)
+    //     if (currentOfSeries) {
+    //       console.log('yyyy', currentOfSeries)
+    //       const nextOfSeries = sortedBooks[currentOfSeries.index + 1]
+    //       if (nextOfSeries) {
+    //         console.log('zzzz', nextOfSeries)
+    //         navigate(
+    //           `/series/${currentSeries.id}/book/${nextOfSeries.book.id}?page=${0}`,
+    //         )
+    //         return
+    //       }
+    //     }
+    //   }
+    // }
     toPage(currentPage + 1)
   }
 
