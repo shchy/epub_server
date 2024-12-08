@@ -8,8 +8,27 @@ import { LazyScrollList } from './LazyScrollList'
 
 export const HomeComponent = () => {
   const navigate = useNavigate()
-  const [series, setSeries] = useState<BookSeries[]>([])
+  const [_series, setSeries] = useState<BookSeries[]>([])
   const [recents, setRecents] = useState<OpenRecent[]>([])
+  const series = useMemo(() => {
+    const notfound = -1
+    const xs = [..._series].sort((a, b) => {
+      const ai = recents.findIndex((x) => x.bookId.startsWith(a.id))
+      const bi = recents.findIndex((x) => x.bookId.startsWith(b.id))
+
+      if (ai !== notfound && bi !== notfound) {
+        return ai < bi ? -1 : 1
+      } else if (ai !== notfound) {
+        return -1
+      } else if (bi !== notfound) {
+        return 1
+      } else {
+        return a.id < b.id ? -1 : 1
+      }
+    })
+
+    return xs
+  }, [_series, recents])
   const { getSeries, listRecents } = useBookLibrary()
   const books = useMemo(
     () =>

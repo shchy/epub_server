@@ -9,9 +9,9 @@ import { Carousel } from './Carousel'
 export const BookComponent = () => {
   const navigate = useNavigate()
   const { bookId } = useParams()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { loading } = useLoading()
-  const { getBook, saveRecent, epubDownload } = useBookLibrary()
+  const { getBook, saveRecent, epubDownload, getSeries } = useBookLibrary()
   const [pages, setPages] = useState<Omit<PageProp, 'currentPage'>[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [title, setTitle] = useState('')
@@ -51,6 +51,9 @@ export const BookComponent = () => {
 
   const toPage = useCallback(
     (pageIndex: number) => {
+      if (pages.length === 0) {
+        return
+      }
       if (pageIndex < 0) {
         pageIndex = 0
       } else if (pages.length <= pageIndex) {
@@ -59,37 +62,36 @@ export const BookComponent = () => {
       if (pageIndex === currentPage) return
       setCurrentPage(pageIndex)
       if (bookId) saveRecent(bookId, pageIndex)
+      setSearchParams({ ['page']: pageIndex.toString() })
     },
-    [bookId, currentPage, setCurrentPage, pages, saveRecent],
+    [bookId, currentPage, setCurrentPage, pages, saveRecent, setSearchParams],
   )
 
   const next = async () => {
-    // if (currentPage + 1 >= pages.length) {
-    //   console.log('asdf')
-    //   const series = await getSeries()
-    //   const currentSeries = series.find((s) =>
-    //     s.books.some((b) => b.id === bookId),
-    //   )
-    //   if (currentSeries) {
-    //     console.log('qwerty')
-    //     const books = [...(currentSeries.books ?? [])]
-    //     const sortedBooks = books
-    //       .sort((a, b) => (a.id < b.id ? -1 : 1))
-    //       .map((book, index) => ({ book, index }))
-    //     const currentOfSeries = sortedBooks.find((x) => x.book.id === bookId)
-    //     if (currentOfSeries) {
-    //       console.log('yyyy', currentOfSeries)
-    //       const nextOfSeries = sortedBooks[currentOfSeries.index + 1]
-    //       if (nextOfSeries) {
-    //         console.log('zzzz', nextOfSeries)
-    //         navigate(
-    //           `/series/${currentSeries.id}/book/${nextOfSeries.book.id}?page=${0}`,
-    //         )
-    //         return
-    //       }
-    //     }
-    //   }
-    // }
+    // 最終ページだったら次の作品開く
+    if (currentPage + 1 >= pages.length) {
+      const series = await getSeries()
+      const currentSeries = series.find((s) =>
+        s.books.some((b) => b.id === bookId),
+      )
+      if (currentSeries) {
+        const books = [...(currentSeries.books ?? [])]
+        const sortedBooks = books
+          .sort((a, b) => (a.id < b.id ? -1 : 1))
+          .map((book, index) => ({ book, index }))
+        const currentOfSeries = sortedBooks.find((x) => x.book.id === bookId)
+        if (currentOfSeries) {
+          const nextOfSeries = sortedBooks[currentOfSeries.index + 1]
+          if (nextOfSeries) {
+            document.location = `/series/${currentSeries.id}/book/${nextOfSeries.book.id}?page=${0}`
+            // navigate(
+            //   `/series/${currentSeries.id}/book/${nextOfSeries.book.id}?page=${0}`,
+            // )
+            return
+          }
+        }
+      }
+    }
     toPage(currentPage + 1)
   }
 
