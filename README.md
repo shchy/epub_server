@@ -60,3 +60,17 @@ mkcertでローカルPCにルート証明書作成
 mkcertでサーバ（RaspberryPI）のIPで証明書作成  
 ルート証明書を家族のiPhoneにAirDropで転送してインストールしてもらう
 
+# raspberrypi zero2
+
+## USBの有線LAN(TP-linkのUE300)
+認識しない  
+` /boot/firmware/cmdline.txt`に`dwc_otg.speed=1`を追加  
+効果なし  
+
+USB拡張（GeeekPi B07V3DY76F）を外したら普通に使えた。
+
+
+
+# 無線無効化
+
+`sudo ifconfig wlan0 down`

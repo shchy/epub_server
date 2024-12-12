@@ -17,6 +17,9 @@ export const DeleteCacheButton = () => {
         indexedDB.deleteDatabase(db.name)
       }
     }
+    for (const key of await caches.keys()) {
+      await caches.delete(key)
+    }
   }
   return (
     <>
