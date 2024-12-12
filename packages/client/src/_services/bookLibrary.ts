@@ -79,25 +79,32 @@ export const CreateBookLibrary = () => {
     return page?.html
   }
 
-  const downloadProgressRasio = 0.99
+  const downloadProgressRasio = 1
   const _getEpub = async (bookId: string, setProgress: (v: number) => void) => {
     const res = await fetch('/api/book/' + bookId)
-    if (!res.body) return
-    if (!res.headers) return
+    if (!res.body) throw new Error('body not found')
+    if (!res.headers) throw new Error('headers not found')
     const reader = res.body.getReader()
     const contentLength = +(res.headers.get('Content-Length') ?? '0')
+
+    const data = new Uint8Array(contentLength)
     let receivedLength = 0
-    const chunks: Uint8Array[] = []
+    let lastProgress = 0
+    const diffOnUpdate = 0.05
     while (true) {
       const { done, value } = await reader.read()
       if (done) {
         break
       }
-      chunks.push(value)
+      data.set(value, receivedLength)
       receivedLength += value.length
-      setProgress((receivedLength / contentLength) * downloadProgressRasio)
+      const p = (receivedLength / contentLength) * downloadProgressRasio
+      if (p - lastProgress > diffOnUpdate) {
+        setProgress(p)
+        lastProgress = p
+      }
     }
-    return chunks
+    return data
   }
 
   const epubDownload = async (
@@ -106,13 +113,6 @@ export const CreateBookLibrary = () => {
   ) => {
     try {
       const bin = await _getEpub(bookId, setProgress)
-        .then((chunks) => {
-          return new Blob(chunks)
-        })
-        .then((blob) => blob.arrayBuffer())
-        .then((buffer) => {
-          return new Uint8Array(buffer)
-        })
 
       const epub = CreateEpub({
         epubFile: bin,
