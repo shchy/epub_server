@@ -78,7 +78,7 @@ const pwa = await VitePWA({
         options: {
           cacheName: 'epub',
           expiration: {
-            maxEntries: 3,
+            maxEntries: 30,
             maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
           },
           cacheableResponse: {
