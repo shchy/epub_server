@@ -9,7 +9,7 @@ import {
 import path from 'path'
 import sharp from 'sharp'
 import { JSDOM } from 'jsdom'
-import { Book, CreateEpub, CreateEpubController } from './packages/lib'
+import { Book, CreateEpub } from './packages/lib'
 
 const run = async () => {
   const rootDir = process.argv.slice(2)[0]
@@ -62,16 +62,19 @@ const run = async () => {
       const book = await new Promise<Buffer>((resolve) =>
         resolve(readFileSync(epubFilepath)),
       )
-        .then((fileData) => CreateEpub(fileData))
-        .then((epub) =>
-          CreateEpubController(epub, new new JSDOM().window.DOMParser(), path),
+        .then((fileData) =>
+          CreateEpub({
+            epubFile: fileData,
+            domParser: new new JSDOM().window.DOMParser(),
+            path: path,
+          }),
         )
         .then((ctrl) => {
           return {
             coverImage: ctrl.getCoverImage(),
-            id: ctrl.epub.metaData.identifier,
-            name: ctrl.epub.metaData.title,
-            pageCount: ctrl.epub.spine.length,
+            id: ctrl.metaData.identifier,
+            name: ctrl.metaData.title,
+            pageCount: ctrl.spine.length,
           }
         })
         .then((x) =>
