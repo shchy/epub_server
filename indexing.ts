@@ -1,13 +1,7 @@
-import {
-  readdirSync,
-  statSync,
-  readFileSync,
-  writeFileSync,
-  existsSync,
-  mkdirSync,
-} from 'fs'
+import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import * as fflate from 'fflate'
 import { JSDOM } from 'jsdom'
 import { Book, CreateEpub } from './packages/lib'
 
@@ -21,20 +15,21 @@ const run = async () => {
 
   const indexFilePath = path.join(bookDir, 'index.json')
   const beforeBooks =
-    existsSync(indexFilePath) ?
-      (JSON.parse(readFileSync(indexFilePath).toString('utf8')) as Book[])
+    fs.existsSync(indexFilePath) ?
+      (JSON.parse(fs.readFileSync(indexFilePath).toString('utf8')) as Book[])
     : []
-  if (!existsSync(thumbnailDir)) {
-    mkdirSync(thumbnailDir)
+  if (!fs.existsSync(thumbnailDir)) {
+    fs.mkdirSync(thumbnailDir)
   }
 
-  const epubList = readdirSync(bookDir)
+  const epubList = fs
+    .readdirSync(bookDir)
     .map((fspath) => {
       const fullPath = path.join(bookDir, fspath)
       return fullPath
     })
     .filter((filepath) => {
-      const stat = statSync(filepath)
+      const stat = fs.statSync(filepath)
       return stat.isFile()
     })
     .filter((filepath) => filepath.endsWith('.epub'))
@@ -45,7 +40,7 @@ const run = async () => {
     fileNames.includes(x.filePath),
   )
   const save = () =>
-    writeFileSync(indexFilePath, JSON.stringify(books, undefined, 2))
+    fs.writeFileSync(indexFilePath, JSON.stringify(books, undefined, 2))
 
   // raspberrypiがすぐ落ちるから一旦セーブ
   save()
@@ -59,8 +54,10 @@ const run = async () => {
         continue
       }
 
+      await repack(epubFilepath)
+
       const book = await new Promise<Buffer>((resolve) =>
-        resolve(readFileSync(epubFilepath)),
+        resolve(fs.readFileSync(epubFilepath)),
       )
         .then((fileData) =>
           CreateEpub({
@@ -90,7 +87,7 @@ const run = async () => {
         )
 
       const thumbnailPath = path.join(thumbnailDir, `${book.id}.png`)
-      writeFileSync(thumbnailPath, book.thumbnail)
+      fs.writeFileSync(thumbnailPath, book.thumbnail)
 
       books.push({
         id: book.id,
@@ -106,6 +103,34 @@ const run = async () => {
       console.error('error', err)
     }
   }
+}
+
+const repack = async (filePath: string) => {
+  const file = await fs.readFileSync(filePath)
+  const unziped = fflate.unzipSync(file)
+
+  const imgFiles = Object.keys(unziped).filter((x) => x.endsWith('.png'))
+  for (const { imgFilePath, index } of imgFiles.map((imgFilePath, index) => ({
+    imgFilePath,
+    index,
+  }))) {
+    const bytes = unziped[imgFilePath]
+    const edited = await sharp(bytes)
+      .png({
+        adaptiveFiltering: true,
+        compressionLevel: 9,
+        quality: 100,
+      })
+      .toBuffer()
+    unziped[imgFilePath] = new Uint8Array(edited)
+    console.log(
+      `${index + 1}/${imgFiles.length}\t${imgFilePath}\t${bytes.length} -> ${edited.length}(${(edited.length / bytes.length).toFixed(2)})`,
+    )
+  }
+
+  const zipped = fflate.zipSync(unziped)
+  const { dir, name, ext } = path.parse(filePath)
+  fs.writeFileSync(path.join(dir, `${name}${ext}`), zipped)
 }
 
 run()

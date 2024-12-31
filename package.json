@@ -63,6 +63,7 @@
     "watch": "pnpm -F \"@epub/*\" --parallel watch",
     "client": "pnpm -F \"@epub/client\"",
     "serve": "pnpm -F \"@epub/server\" dev",
-    "indexing": "tsx indexing.ts"
+    "indexing": "tsx indexing.ts",
+    "repack": "tsx shrink.ts ./mount/booksa/"
   }
 }
