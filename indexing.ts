@@ -54,6 +54,7 @@ const run = async () => {
         continue
       }
 
+      console.log(epubFilepath)
       await repack(epubFilepath)
 
       const book = await new Promise<Buffer>((resolve) =>

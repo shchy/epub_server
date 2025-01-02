@@ -28,7 +28,7 @@ const repack = async (filePath: string) => {
 
   const zipped = fflate.zipSync(unziped)
   const { dir, name, ext } = path.parse(filePath)
-  fs.writeFileSync(path.join(dir, `${name}.a.${ext}`), zipped)
+  fs.writeFileSync(path.join(dir, `${name}${ext}`), zipped)
 }
 
 const run = async () => {
